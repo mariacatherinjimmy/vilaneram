@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VilaNeram — Admin Panel</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --forest: #1a4a2e;
+      --leaf: #2d6a4f;
+      --mint: #52a872;
+      --sage: #e8f5ee;
+      --gold: #e8a020;
+      --gold-l: #f5c842;
+      --cream: #f7f5ef;
+      --dark: #1c2b22;
+      --muted: #6b7c6e;
+      --border: #dde8e0;
+      --red: #e63946;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+    }
+
+    .navbar-vn {
+      background: linear-gradient(135deg, #1a4a2e, #1e5534 60%, #2d6a4f);
+      padding: 0 28px;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .22);
+    }
+
+    .nav-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .nav-brand h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .nav-brand p {
+      font-size: 10px;
+      color: #7ecfa0;
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .nav-btn {
+      padding: 7px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255, 255, 255, .72);
+      font: 600 12px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .nav-btn.active {
+      color: #fff;
+      background: rgba(255, 255, 255, .15);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .admin-tag {
+      background: linear-gradient(135deg, var(--gold), var(--gold-l));
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 16px;
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .user-av {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .user-name {
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border-radius: 14px;
+      min-width: 190px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+      border: 1px solid var(--border);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: all .22s;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .user-dropdown.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .ud-head {
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ud-head strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .ud-head span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .ud-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: background .15s;
+    }
+
+    .ud-item:hover {
+      background: var(--sage);
+    }
+
+    .ud-item.danger {
+      color: var(--red);
+    }
+
+    .ud-item.danger:hover {
+      background: #fdecea;
+    }
+
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeUp .3s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* FETCH BAR */
+    .fetch-bar {
+      background: linear-gradient(135deg, var(--forest), var(--leaf));
+      border-radius: 18px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .fetch-info h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 4px;
+    }
+
+    .fetch-info p {
+      font-size: 12px;
+      color: #9ecfb8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fdot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9ecfb8;
+      flex-shrink: 0;
+    }
+
+    .fdot.live {
+      background: #4ade80;
+      box-shadow: 0 0 8px #4ade80;
+      animation: blink 1.2s infinite;
+    }
+
+    .fdot.err {
+      background: #f87171;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: .3;
+      }
+    }
+
+    .fetch-prog {
+      height: 3px;
+      background: rgba(255, 255, 255, .15);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .fetch-prog.on {
+      display: block;
+    }
+
+    .fetch-prog-bar {
+      height: 100%;
+      background: var(--gold-l);
+      border-radius: 3px;
+      animation: progroll 2s ease-in-out infinite;
+    }
+
+    @keyframes progroll {
+      0% {
+        width: 5%;
+        margin-left: 0;
+      }
+
+      50% {
+        width: 60%;
+        margin-left: 20%;
+      }
+
+      100% {
+        width: 5%;
+        margin-left: 90%;
+      }
+    }
+
+    .fetch-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-fetch {
+      padding: 9px 18px;
+      background: rgba(255, 255, 255, .15);
+      border: 1.5px solid rgba(255, 255, 255, .3);
+      border-radius: 9px;
+      color: #fff;
+      font: 700 12px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-fetch:hover {
+      background: rgba(255, 255, 255, .25);
+    }
+
+    .btn-fetch.gold-btn {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .btn-fetch:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    /* KPI */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      border-top: 3px solid transparent;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .09);
+    }
+
+    .kpi-card.c-green {
+      border-top-color: var(--mint);
+    }
+
+    .kpi-card.c-gold {
+      border-top-color: var(--gold);
+    }
+
+    .kpi-card.c-blue {
+      border-top-color: var(--blue);
+    }
+
+    .kpi-card.c-red {
+      border-top-color: var(--red);
+    }
+
+    .kpi-card.c-purple {
+      border-top-color: var(--purple);
+    }
+
+    .kpi-card.c-teal {
+      border-top-color: #06b6d4;
+    }
+
+    .kpi-icon {
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--forest);
+    }
+
+    .kpi-val.sk {
+      background: linear-gradient(90deg, #e8f5ee 25%, #d0ead8 50%, #e8f5ee 75%);
+      background-size: 300% 100%;
+      animation: sk 1.4s infinite;
+      border-radius: 6px;
+      color: transparent;
+      min-width: 44px;
+      display: inline-block;
+    }
+
+    @keyframes sk {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* CARDS */
+    .card-vn {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .card-hd {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .card-hd h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--forest);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .card-bd {
+      padding: 18px;
+    }
+
+    /* CHARTS */
+    .ch240 {
+      height: 240px;
+      position: relative;
+    }
+
+    .ch280 {
+      height: 280px;
+      position: relative;
+    }
+
+    .ch200 {
+      height: 200px;
+      position: relative;
+    }
+
+    .ch260 {
+      height: 260px;
+      position: relative;
+    }
+
+    /* TABLES */
+    .tbl-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--sage);
+    }
+
+    th {
+      padding: 9px 13px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--forest);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    td {
+      padding: 10px 13px;
+      border-bottom: 1px solid #f0ede6;
+      color: var(--dark);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fafdf8;
+    }
+
+    .bs {
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bs-active {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .bs-inactive {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* BUTTONS */
+    .btn-vn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font: 700 13px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--forest);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--leaf);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-l);
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--dark);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--leaf);
+      color: var(--leaf);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--red);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .srch-inp {
+      padding: 7px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font: 13px 'DM Sans', sans-serif;
+      outline: none;
+      width: 200px;
+    }
+
+    .srch-inp:focus {
+      border-color: var(--leaf);
+    }
+
+    .toast-wrap {
+      position: fixed;
+      top: 76px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .toast-vn {
+      background: #fff;
+      border-radius: 11px;
+      padding: 11px 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+      border-left: 4px solid var(--mint);
+      font-size: 13px;
+      font-weight: 500;
+      animation: sli .3s ease;
+      min-width: 240px;
+    }
+
+    .toast-vn.error {
+      border-left-color: var(--red);
+    }
+
+    .toast-vn.gold {
+      border-left-color: var(--gold);
+    }
+
+    @keyframes sli {
+      from {
+        opacity: 0;
+        transform: translateX(36px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* TRAIN SPINNER */
+    .t-spin {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: var(--sage);
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--forest);
+      font-weight: 600;
+    }
+
+    .t-spin.on {
+      display: flex;
+    }
+
+    .spin {
+      width: 16px;
+      height: 16px;
+      border: 2.5px solid var(--mint);
+      border-top-color: var(--forest);
+      border-radius: 50%;
+      animation: rot .7s linear infinite;
+    }
+
+    @keyframes rot {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* EVAL BADGES */
+    .ebadge {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--sage);
+      border-radius: 10px;
+      padding: 8px 14px;
+      min-width: 80px;
+    }
+
+    .ebadge .elbl {
+      font-size: 10px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+
+    .ebadge .eval {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--forest);
+    }
+
+    .sec-hd {
+      margin-bottom: 20px;
+    }
+
+    .sec-hd h4 {
+      font-family: 'Playfair Display', serif;
+      color: var(--forest);
+      font-size: 22px;
+    }
+
+    .sec-hd p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    @media(max-width:1100px) {
+      .kpi-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media(max-width:992px) {
+      .nav-center {
+        display: none !important;
+      }
+
+      .kpi-row {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media(max-width:576px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .page {
+        padding: 14px 10px 60px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar-vn">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="nav-brand">
+        <h1>Vila<em>Neram</em></h1>
+        <p>Administration Panel</p>
+      </div>
+    </div>
+    <div class="nav-center">
+      <button class="nav-btn active" onclick="showSection('dashboard',this)"><i class="bi bi-speedometer2"></i>
+        Dashboard</button>
+      <button class="nav-btn" onclick="showSection('farmers',this)"><i class="bi bi-person-badge"></i> Farmers</button>
+      <button class="nav-btn" onclick="showSection('shopkeepers',this)"><i class="bi bi-shop"></i> Shopkeepers</button>
+      <button class="nav-btn" onclick="showSection('prices',this)"><i class="bi bi-database"></i> Price Data</button>
+      <button class="nav-btn" onclick="showSection('model',this)"><i class="bi bi-cpu"></i> ML Model</button>
+      <button class="nav-btn" onclick="showSection('analytics',this)"><i class="bi bi-bar-chart-line"></i>
+        Analytics</button>
+    </div>
+    <div class="nav-right">
+      <span class="admin-tag">⚙ Admin</span>
+      <div class="user-menu">
+        <div class="user-btn" onclick="toggleUserMenu(event)">
+          <div class="user-av">A</div>
+          <span class="user-name" id="nav-admin-name">Admin</span>
+          <i class="bi bi-chevron-down" style="color:rgba(255,255,255,.6);font-size:10px;margin-left:2px;"></i>
+        </div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="ud-head"><strong>Administrator</strong><span>VilaNeram Platform</span></div>
+          <button class="ud-item danger" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- ═══════════════════════ DASHBOARD ═══════════════════════ -->
+    <div class="section active" id="sec-dashboard">
+      <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-3">
+        <div class="sec-hd" style="margin-bottom:0;">
+          <h4>Admin Dashboard</h4>
+          <p>Platform overview — users, marketplace and data management</p>
+        </div>
+        <span id="dash-time" style="font-size:11px;color:var(--muted);align-self:flex-end;"></span>
+      </div>
+
+      <!-- Fetch Bar -->
+      <div class="fetch-bar">
+        <div class="fetch-info" style="flex:1;min-width:200px;">
+          <h4>📡 Ecostat Kerala Data Feed</h4>
+          <p><span class="fdot" id="fdot"></span><span id="fetch-txt">Checking last fetch…</span></p>
+          <div class="fetch-prog" id="fetch-prog">
+            <div class="fetch-prog-bar"></div>
+          </div>
+        </div>
+        <div class="fetch-btns">
+          <button class="btn-fetch" id="btn-fetch-main" onclick="fetchData()"><i class="bi bi-cloud-download"></i> Fetch
+            Latest Data</button>
+          <button class="btn-fetch gold-btn" id="btn-train-main" onclick="trainModel()"><i class="bi bi-cpu"></i>
+            Retrain XGBoost</button>
+        </div>
+      </div>
+
+      <!-- KPI Row — shimmer skeleton until data arrives -->
+      <div class="kpi-row">
+        <div class="kpi-card c-green">
+          <div class="kpi-icon">🧑‍🌾</div>
+          <div class="kpi-val sk" id="kpi-farmers">000</div>
+          <div class="kpi-label">Registered Farmers</div>
+        </div>
+        <div class="kpi-card c-gold">
+          <div class="kpi-icon">🏪</div>
+          <div class="kpi-val sk" id="kpi-shopkeepers">000</div>
+          <div class="kpi-label">Registered Shopkeepers</div>
+        </div>
+        <div class="kpi-card c-blue">
+          <div class="kpi-icon">📋</div>
+          <div class="kpi-val sk" id="kpi-listings">000</div>
+          <div class="kpi-label">Active Listings</div>
+        </div>
+        <div class="kpi-card c-red">
+          <div class="kpi-icon">🤝</div>
+          <div class="kpi-val sk" id="kpi-requests">000</div>
+          <div class="kpi-label">Total Requests</div>
+        </div>
+        <div class="kpi-card c-purple">
+          <div class="kpi-icon">✅</div>
+          <div class="kpi-val sk" id="kpi-accepted">000</div>
+          <div class="kpi-label">Accepted Requests</div>
+        </div>
+        <div class="kpi-card c-teal">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-val sk" id="kpi-prices">000</div>
+          <div class="kpi-label">Price Records</div>
+        </div>
+      </div>
+
+      <!-- Row 1 -->
+      <div class="row g-3 mb-3">
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-people text-success"></i> User Distribution</h3>
+            </div>
+            <div class="card-bd">
+              <div class="ch240"><canvas id="user-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-arrow-left-right" style="color:var(--gold)"></i> Request Status</h3>
+            </div>
+            <div class="card-bd">
+              <div class="ch240"><canvas id="req-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: District spread + Top commodities -->
+      <div class="row g-3 mb-3">
+        <div class="col-lg-7">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-geo-alt text-success"></i> District-wise Users</h3>
+              <span style="font-size:11px;color:var(--muted);" id="district-note">Loading…</span>
+            </div>
+            <div class="card-bd">
+              <div class="ch280"><canvas id="district-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-boxes" style="color:var(--blue)"></i> Top Commodities</h3>
+            </div>
+            <div class="card-bd">
+              <div class="ch280"><canvas id="commodity-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Request trend + Fetch history -->
+      <div class="row g-3 mb-3">
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-graph-up-arrow" style="color:var(--blue)"></i> Request Trend (Last 7 Days)</h3>
+            </div>
+            <div class="card-bd">
+              <div class="ch200"><canvas id="trend-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-clock-history" style="color:var(--purple)"></i> Fetch History (Last 14 Days)</h3>
+            </div>
+            <div class="card-bd">
+              <div class="ch200"><canvas id="fetch-hist-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 4: District supply vs demand -->
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-bar-chart-steps text-success"></i> District-wise Supply vs Demand (Active Listings)
+              </h3>
+            </div>
+            <div class="card-bd">
+              <div class="ch260"><canvas id="district-listing-chart"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ FARMERS ═══════════════════════ -->
+    <div class="section" id="sec-farmers">
+      <div class="sec-hd">
+        <h4>🧑‍🌾 Farmers</h4>
+        <p>Manage all registered farmer accounts</p>
+      </div>
+      <div class="card-vn">
+        <div class="card-hd">
+          <h3><i class="bi bi-person-badge text-success"></i> All Farmers</h3>
+          <input class="srch-inp" id="farmer-search" placeholder="Search name or location…"
+            oninput="filterTb('farmer-tb',this.value)" />
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>District</th>
+                <th>Local Body</th>
+                <th>Joined</th>
+                <th>Last Login</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="farmer-tb">
+              <tr>
+                <td colspan="8" class="text-center py-4">
+                  <div class="spin" style="margin:0 auto;"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ SHOPKEEPERS ═══════════════════════ -->
+    <div class="section" id="sec-shopkeepers">
+      <div class="sec-hd">
+        <h4>🏪 Shopkeepers</h4>
+        <p>Manage all registered shopkeeper accounts</p>
+      </div>
+      <div class="card-vn">
+        <div class="card-hd">
+          <h3><i class="bi bi-shop" style="color:var(--gold)"></i> All Shopkeepers</h3>
+          <input class="srch-inp" id="shop-search" placeholder="Search name or location…"
+            oninput="filterTb('shop-tb',this.value)" />
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Mobile</th>
+                <th>District</th>
+                <th>Local Body</th>
+                <th>Joined</th>
+                <th>Last Login</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="shop-tb">
+              <tr>
+                <td colspan="8" class="text-center py-4">
+                  <div class="spin" style="margin:0 auto;"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ PRICE DATA ═══════════════════════ -->
+    <div class="section" id="sec-prices">
+      <div class="sec-hd d-flex align-items-start justify-content-between flex-wrap gap-2">
+        <div>
+          <h4>💰 Price Data</h4>
+          <p>Ecostat Kerala commodity prices</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn-vn btn-primary btn-sm" onclick="fetchData()"><i class="bi bi-cloud-download"></i> Fetch
+            Now</button>
+          <button class="btn-vn btn-outline btn-sm" onclick="exportCSV()"><i class="bi bi-download"></i> Export
+            CSV</button>
+        </div>
+      </div>
+      <div class="card-vn">
+        <div class="card-hd">
+          <h3><i class="bi bi-database text-success"></i> Price Records</h3>
+          <div class="d-flex align-items-center gap-2">
+            <input class="srch-inp" id="price-search" placeholder="Search commodity…"
+              oninput="filterPrices(this.value)" />
+            <span class="text-muted" style="font-size:12px;" id="price-count"></span>
+          </div>
+        </div>
+        <div class="tbl-wrap" style="max-height:480px;overflow-y:auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Commodity</th>
+                <th>Category</th>
+                <th>Price (₹)</th>
+                <th>Prev Month (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="price-tb">
+              <tr>
+                <td colspan="5" class="text-center py-4">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ ML MODEL ═══════════════════════ -->
+    <div class="section" id="sec-model">
+      <div class="sec-hd">
+        <h4>🤖 XGBoost ML Model</h4>
+        <p>Price forecasting model management</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-cpu text-success"></i> Model Controls</h3>
+            </div>
+            <div class="card-bd">
+              <p style="font-size:13px;color:var(--muted);margin-bottom:18px;">The XGBoost model is trained on official
+                Ecostat Kerala price data. Retrain after fetching fresh data for best accuracy.</p>
+              <div class="d-flex gap-3 flex-wrap mb-3">
+                <button class="btn-vn btn-gold" onclick="fetchData()"><i class="bi bi-cloud-download"></i> Fetch Data
+                  First</button>
+                <button class="btn-vn btn-primary" id="btn-train-model" onclick="trainModel()"><i class="bi bi-cpu"></i>
+                  Retrain Model</button>
+              </div>
+              <div class="t-spin" id="train-spinner">
+                <div class="spin"></div><span>Training XGBoost… 30–60 seconds</span>
+              </div>
+              <div id="train-result"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-info-circle text-primary"></i> How It Works</h3>
+            </div>
+            <div class="card-bd" style="font-size:13px;color:var(--muted);line-height:1.8;">
+              <p><strong style="color:var(--forest);">Data Source</strong><br />Daily prices from Ecostat Kerala
+                Government API (dataset 465)</p>
+              <p class="mt-2"><strong style="color:var(--forest);">Features</strong><br />Lag prices (1,2,3,5,7,14,30
+                days), rolling averages, seasonal flags, momentum</p>
+              <p class="mt-2"><strong style="color:var(--forest);">Model</strong><br />XGBoost Regressor — 500
+                estimators, max depth 8, global model across all commodities</p>
+              <p class="mt-2"><strong style="color:var(--forest);">Auto-trigger</strong><br />First user of the day
+                triggers background fetch. Predict endpoint auto-trains if stale.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" id="eval-section" style="display:none;">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-graph-up text-success"></i> Latest Model Performance</h3>
+            </div>
+            <div class="card-bd" id="eval-content"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════ ANALYTICS ═══════════════════════ -->
+    <div class="section" id="sec-analytics">
+      <div class="sec-hd">
+        <h4>📊 Platform Analytics</h4>
+        <p>Supply, demand and marketplace overview</p>
+      </div>
+      <div class="card-vn">
+        <div class="card-hd">
+          <h3><i class="bi bi-bar-chart text-success"></i> Supply vs Demand vs Requests</h3>
+        </div>
+        <div class="card-bd">
+          <div style="height:300px;"><canvas id="analytics-chart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+
+  <div class="toast-wrap" id="toast-wrap"></div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // ─────────────────────────────────────────────────────────
+    // STATE
+    // ─────────────────────────────────────────────────────────
+    var TOKEN = null, allPrices = [], CHS = {};
+
+    // ─────────────────────────────────────────────────────────
+    // INIT
+    // ─────────────────────────────────────────────────────────
+    window.onload = function () {
+      TOKEN = localStorage.getItem('token');
+      if (!TOKEN) { window.location.href = '/'; return; }
+      if (localStorage.getItem('role') !== 'admin') { window.location.replace('/index.html'); return; }
+      document.getElementById('nav-admin-name').textContent = localStorage.getItem('name') || 'Admin';
+      loadDashboardParallel();
+    };
+
+    // ─────────────────────────────────────────────────────────
+    // PARALLEL DASHBOARD LOAD
+    // Both API calls fire at the same time.
+    // KPIs render as soon as /stats returns (~fast).
+    // Charts render as soon as /district-stats returns.
+    // Nothing waits for nothing else.
+    // ─────────────────────────────────────────────────────────
+    function loadDashboardParallel() {
+      // Fire both simultaneously — no await, pure .then chains
+      api('/api/admin/stats')
+        .then(renderStats)
+        .catch(function () { toast('Could not load platform stats', 'error'); });
+
+      api('/api/admin/district-stats')
+        .then(renderDistrictStats)
+        .catch(function () {
+          document.getElementById('district-note').textContent = 'No district data yet';
+        });
+    }
+
+    function renderStats(s) {
+      setKpi('kpi-farmers', s.farmers);
+      setKpi('kpi-shopkeepers', s.shopkeepers);
+      setKpi('kpi-listings', (s.active_supply || 0) + (s.active_demand || 0));
+      setKpi('kpi-requests', s.total_requests);
+      setKpi('kpi-accepted', s.accepted_requests);
+      setKpi('kpi-prices', (s.price_records || 0).toLocaleString());
+
+      var fd = s.last_fetch || {};
+      var today = new Date().toISOString().slice(0, 10);
+      var dot = document.getElementById('fdot');
+      if (fd.date === today) {
+        dot.className = 'fdot live';
+        document.getElementById('fetch-txt').textContent = 'Last fetch: Today — ' + (fd.inserted || 0) + ' records inserted';
+      } else if (fd.date && fd.date !== 'Never') {
+        document.getElementById('fetch-txt').textContent = 'Last fetch: ' + fd.date + ' — ' + (fd.inserted || 0) + ' records';
+      } else {
+        document.getElementById('fetch-txt').textContent = 'No fetch yet — click Fetch Latest Data';
+      }
+
+      drawCh('user-chart', 'doughnut',
+        { labels: ['Farmers', 'Shopkeepers'], datasets: [{ data: [s.farmers, s.shopkeepers], backgroundColor: ['#2d6a4f', '#e8a020'], borderWidth: 0, hoverOffset: 8 }] },
+        { plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } } } });
+
+      drawCh('req-chart', 'doughnut',
+        { labels: ['Accepted', 'Pending/Rejected'], datasets: [{ data: [s.accepted_requests, Math.max(0, s.total_requests - s.accepted_requests)], backgroundColor: ['#22c55e', '#e8a020'], borderWidth: 0, hoverOffset: 8 }] },
+        { plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } } } });
+
+      document.getElementById('dash-time').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    }
+
+    function renderDistrictStats(d) {
+      // District user bar
+      var dKeys = Object.keys(d.districts || {}).sort();
+      if (dKeys.length > 0) {
+        document.getElementById('district-note').textContent = dKeys.length + ' districts with users';
+        drawCh('district-chart', 'bar', {
+          labels: dKeys,
+          datasets: [
+            { label: 'Farmers', data: dKeys.map(function (k) { return d.districts[k].farmers; }), backgroundColor: '#2d6a4f', borderRadius: 5 },
+            { label: 'Shopkeepers', data: dKeys.map(function (k) { return d.districts[k].shopkeepers; }), backgroundColor: '#e8a020', borderRadius: 5 }
+          ]
+        }, { plugins: { legend: { position: 'top' } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 40 } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' } } } });
+
+        drawCh('district-listing-chart', 'bar', {
+          labels: dKeys,
+          datasets: [
+            { label: 'Active Supply', data: dKeys.map(function (k) { return d.districts[k].supply; }), backgroundColor: '#52a872', borderRadius: 5 },
+            { label: 'Active Demand', data: dKeys.map(function (k) { return d.districts[k].demand; }), backgroundColor: '#3b82f6', borderRadius: 5 }
+          ]
+        }, { plugins: { legend: { position: 'top' } }, scales: { x: { grid: { display: false }, ticks: { font: { size: 10 }, maxRotation: 40 } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' } } } });
+      } else {
+        document.getElementById('district-note').textContent = 'No users registered yet';
+      }
+
+      // Top commodities horizontal bar
+      var tc = d.top_commodities || [];
+      if (tc.length) {
+        var pallete = ['#2d6a4f', '#e8a020', '#3b82f6', '#22c55e', '#8b5cf6', '#f97316', '#06b6d4', '#ec4899', '#a3e635', '#facc15'];
+        drawCh('commodity-chart', 'bar', {
+          labels: tc.map(function (c) { return c.name; }),
+          datasets: [{ label: 'Listings', data: tc.map(function (c) { return c.count; }), backgroundColor: tc.map(function (_, i) { return pallete[i % pallete.length]; }), borderRadius: 5 }]
+        }, { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' } }, y: { grid: { display: false }, ticks: { font: { size: 11 } } } } });
+      }
+
+      // Request trend line
+      var rt = d.request_trend || [];
+      if (rt.length) {
+        drawCh('trend-chart', 'line', {
+          labels: rt.map(function (r) { return r.date.slice(5); }),
+          datasets: [{ label: 'Requests', data: rt.map(function (r) { return r.count; }), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,.1)', fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#3b82f6' }]
+        }, { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' } } } });
+      }
+
+      // Fetch history bar
+      var fh = d.fetch_history || [];
+      if (fh.length) {
+        drawCh('fetch-hist-chart', 'bar', {
+          labels: fh.map(function (f) { return f.date.slice(5); }),
+          datasets: [{
+            label: 'Inserted', data: fh.map(function (f) { return f.inserted; }),
+            backgroundColor: fh.map(function (f) { return f.status === 'success' ? '#22c55e' : f.status === 'partial' ? '#f5c842' : '#e63946'; }), borderRadius: 4
+          }]
+        }, {
+          plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (ctx) { var f = fh[ctx.dataIndex]; return ['Inserted: ' + f.inserted, 'Skipped: ' + f.skipped, 'By: ' + f.triggered_by, 'Status: ' + f.status]; } } } },
+          scales: { x: { grid: { display: false }, ticks: { font: { size: 10 } } }, y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' } } }
+        });
+      }
+
+      // Model eval on ML page
+      var me = d.model_evals || [];
+      if (me.length) {
+        var ev = me[0];
+        document.getElementById('eval-section').style.display = '';
+        document.getElementById('eval-content').innerHTML =
+          '<div class="d-flex flex-wrap gap-3 mb-2">' +
+          eb('RMSE', '₹' + (ev.rmse ? ev.rmse.toFixed(2) : '—')) +
+          eb('MAPE', (ev.mape ? ev.mape.toFixed(1) : '—') + '%') +
+          eb('R²', ev.r2 ? ev.r2.toFixed(3) : '—') +
+          eb('Samples', ev.samples ? ev.samples.toLocaleString() : '—') +
+          '</div><p style="font-size:12px;color:var(--muted);">Last trained: ' + (ev.created_at || '—') + '</p>';
+      }
+    }
+
+    function eb(lbl, val) {
+      return '<div class="ebadge"><span class="elbl">' + lbl + '</span><span class="eval">' + val + '</span></div>';
+    }
+
+    function setKpi(id, val) {
+      var el = document.getElementById(id);
+      el.classList.remove('sk');
+      el.textContent = val;
+    }
+
+    function drawCh(cid, type, data, extra) {
+      if (CHS[cid]) { CHS[cid].destroy(); }
+      var el = document.getElementById(cid);
+      if (!el) return;
+      CHS[cid] = new Chart(el.getContext('2d'), {
+        type: type, data: data,
+        options: Object.assign({ responsive: true, maintainAspectRatio: false, animation: { duration: 500 } }, extra || {})
+      });
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // NAVIGATION
+    // ─────────────────────────────────────────────────────────
+    function showSection(id, btn) {
+      document.querySelectorAll('.nav-btn').forEach(function (b) { b.classList.remove('active'); });
+      document.querySelectorAll('.section').forEach(function (s) { s.classList.remove('active'); });
+      document.getElementById('sec-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+      if (id === 'farmers') loadUsers('farmer');
+      if (id === 'shopkeepers') loadUsers('shopkeeper');
+      if (id === 'prices') loadPrices();
+      if (id === 'analytics') loadAnalytics();
+      window.scrollTo(0, 0);
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // USERS
+    // ─────────────────────────────────────────────────────────
+    async function loadUsers(role) {
+      try {
+        var rows = await api('/api/admin/users');
+        renderUsers(role === 'farmer' ? 'farmer-tb' : 'shop-tb', rows.filter(function (u) { return u.role === role; }));
+      } catch (e) { toast('Could not load users', 'error'); }
+    }
+    function renderUsers(tbId, rows) {
+      var tb = document.getElementById(tbId);
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No users found.</td></tr>'; return; }
+      tb.innerHTML = rows.map(function (u) {
+        return '<tr><td><strong>' + esc(u.name) + '</strong></td><td style="font-family:monospace;font-size:12px;">' + esc(u.mobile) + '</td><td>' + esc(u.district || '—') + '</td><td>' + esc(u.local_body || '—') + '</td><td style="font-size:11px;">' + u.created_at + '</td><td style="font-size:11px;">' + u.last_login + '</td><td><span class="bs ' + (u.is_active ? 'bs-active' : 'bs-inactive') + '">' + (u.is_active ? 'Active' : 'Inactive') + '</span></td><td><button class="btn-vn btn-sm ' + (u.is_active ? 'btn-danger' : 'btn-primary') + '" onclick="toggleUser(' + u.id + ',' + !u.is_active + ',this)">' + (u.is_active ? 'Deactivate' : 'Activate') + '</button></td></tr>';
+      }).join('');
+    }
+    function filterTb(tbId, q) { q = q.toLowerCase(); document.querySelectorAll('#' + tbId + ' tr').forEach(function (r) { r.style.display = r.textContent.toLowerCase().includes(q) ? '' : 'none'; }); }
+    async function toggleUser(id, ns, btn) {
+      try {
+        await api('/api/admin/users/' + id + '/status', 'PATCH', { is_active: ns });
+        toast(ns ? 'User activated' : 'User deactivated');
+        var row = btn.closest('tr');
+        row.querySelector('.bs').className = 'bs ' + (ns ? 'bs-active' : 'bs-inactive');
+        row.querySelector('.bs').textContent = ns ? 'Active' : 'Inactive';
+        btn.textContent = ns ? 'Deactivate' : 'Activate';
+        btn.className = 'btn-vn btn-sm ' + (ns ? 'btn-danger' : 'btn-primary');
+      } catch (e) { toast(e.message || 'Could not update', 'error'); }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // PRICES
+    // ─────────────────────────────────────────────────────────
+    async function loadPrices() {
+      try {
+        allPrices = await api('/api/admin/price-report');
+        document.getElementById('price-count').textContent = allPrices.length.toLocaleString() + ' records';
+        renderPrices(allPrices.slice(0, 200));
+      } catch (e) { toast('Could not load prices', 'error'); }
+    }
+    function renderPrices(rows) {
+      var tb = document.getElementById('price-tb');
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-muted">No price data.</td></tr>'; return; }
+      tb.innerHTML = rows.map(function (r) { return '<tr><td style="font-size:12px;">' + r.date + '</td><td><strong>' + esc(r.commodity_name) + '</strong></td><td>' + esc(r.category || '—') + '</td><td style="font-family:monospace;font-weight:700;">₹' + r.price + '</td><td style="font-family:monospace;">' + (r.prev_month_price ? '₹' + r.prev_month_price : '—') + '</td></tr>'; }).join('');
+    }
+    function filterPrices(q) {
+      q = q.toLowerCase();
+      var f = allPrices.filter(function (r) { return r.commodity_name.toLowerCase().includes(q) || (r.category || '').toLowerCase().includes(q); });
+      document.getElementById('price-count').textContent = f.length.toLocaleString() + ' records';
+      renderPrices(f.slice(0, 200));
+    }
+    function exportCSV() {
+      if (!allPrices.length) { toast('Load prices first', 'error'); return; }
+      var csv = '\uFEFFDate,Commodity,Category,Price,Prev Month Price\n';
+      allPrices.forEach(function (r) { csv += r.date + ',"' + r.commodity_name + '","' + (r.category || '"),' + '' + r.price + ',' + (r.prev_month_price || '') + '\n') });
+      var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); a.download = 'vilaneram_prices.csv'; a.click();
+      toast('CSV exported!');
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // FETCH DATA  (with live progress ring)
+    // ─────────────────────────────────────────────────────────
+    async function fetchData() {
+      var btn = document.getElementById('btn-fetch-main');
+      var prog = document.getElementById('fetch-prog');
+      var dot = document.getElementById('fdot');
+      btn.disabled = true; btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Fetching…';
+      prog.classList.add('on'); dot.className = 'fdot live';
+      document.getElementById('fetch-txt').textContent = 'Fetching from Ecostat Kerala API…';
+      try {
+        var r = await api('/api/admin/fetch-data', 'POST');
+        prog.classList.remove('on');
+        document.getElementById('fetch-txt').textContent = 'Just fetched — ' + r.inserted + ' inserted, ' + r.skipped + ' skipped';
+        toast('✅ Fetch complete — ' + r.inserted + ' records inserted');
+        setTimeout(loadDashboardParallel, 800);
+      } catch (e) {
+        prog.classList.remove('on');
+        dot.className = 'fdot err';
+        document.getElementById('fetch-txt').textContent = 'Fetch failed — check API connection';
+        toast(e.message || 'Fetch failed', 'error');
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="bi bi-cloud-download"></i> Fetch Latest Data';
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // TRAIN MODEL
+    // ─────────────────────────────────────────────────────────
+    async function trainModel() {
+      var sp = document.getElementById('train-spinner');
+      var res = document.getElementById('train-result');
+      var b1 = document.getElementById('btn-train-main');
+      var b2 = document.getElementById('btn-train-model');
+      [b1, b2].forEach(function (b) { if (b) b.disabled = true; });
+      if (sp) sp.classList.add('on');
+      if (res) res.innerHTML = '';
+      toast('Training XGBoost model… may take 30–60 seconds.', 'gold');
+      try {
+        var r = await api('/api/admin/train', 'POST');
+        var p = r.performance || {};
+        if (res) res.innerHTML = '<div style="background:var(--sage);border-radius:12px;padding:14px;font-size:13px;"><strong style="color:var(--forest);">✅ Model trained successfully</strong><div class="d-flex flex-wrap gap-2 mt-2">' + eb('RMSE', '₹' + (p.rmse || 0).toFixed(2)) + eb('MAPE', (p.mape || 0).toFixed(1) + '%') + eb('R²', (p.r2 || 0).toFixed(3)) + '</div></div>';
+        toast('✅ Model trained! RMSE: ₹' + (p.rmse || 0).toFixed(2));
+      } catch (e) {
+        if (res) res.innerHTML = '<div style="color:var(--red);font-size:13px;padding:12px;background:#fdecea;border-radius:10px;">❌ ' + (e.message || 'Training failed') + '</div>';
+        toast(e.message || 'Training failed', 'error');
+      } finally {
+        [b1, b2].forEach(function (b) { if (b) b.disabled = false; });
+        if (sp) sp.classList.remove('on');
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // ANALYTICS
+    // ─────────────────────────────────────────────────────────
+    async function loadAnalytics() {
+      try {
+        var s = await api('/api/admin/stats');
+        setTimeout(function () {
+          drawCh('analytics-chart', 'bar', {
+            labels: ['Active Supply', 'Active Demand', 'Total Requests', 'Accepted', 'Farmers', 'Shopkeepers'],
+            datasets: [{ label: 'Count', data: [s.active_supply, s.active_demand, s.total_requests, s.accepted_requests, s.farmers, s.shopkeepers], backgroundColor: ['#2d6a4f', '#e8a020', '#3b82f6', '#22c55e', '#52a872', '#f5c842'], borderRadius: 8 }]
+          }, { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,.04)' } }, x: { grid: { display: false } } } });
+        }, 100);
+      } catch (e) { toast('Could not load analytics', 'error'); }
+    }
+
+    // ─────────────────────────────────────────────────────────
+    // HELPERS
+    // ─────────────────────────────────────────────────────────
+    function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('open'); }
+    document.addEventListener('click', function () { document.getElementById('user-dropdown').classList.remove('open'); });
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    async function api(url, method, body) {
+      var opts = { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN } };
+      if (body) opts.body = JSON.stringify(body);
+      var r = await fetch(url, opts); var d = await r.json();
+      if (!r.ok) throw new Error(d.detail || 'Request failed');
+      return d;
+    }
+    function toast(msg, type) {
+      var w = document.getElementById('toast-wrap'); var d = document.createElement('div');
+      d.className = 'toast-vn ' + (type || ''); d.textContent = msg; w.appendChild(d);
+      setTimeout(function () { d.remove(); }, 4000);
+    }
+    function doLogout() { ['token', 'role', 'name'].forEach(function (k) { localStorage.removeItem(k); }); window.location.replace('/index.html'); }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,2181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VilaNeram — Farmer Dashboard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --forest: #1a4a2e;
+      --leaf: #2d6a4f;
+      --mint: #52a872;
+      --sage: #e8f5ee;
+      --gold: #e8a020;
+      --gold-l: #f5c842;
+      --cream: #f7f5ef;
+      --dark: #1c2b22;
+      --muted: #6b7c6e;
+      --border: #dde8e0;
+      --red: #e63946;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+    }
+
+    /* NAV */
+    .navbar-vn {
+      background: linear-gradient(135deg, #1a4a2e, #1e5534 60%, #2d6a4f);
+      padding: 0 28px;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .22);
+    }
+
+    .nav-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      color: #fff;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .nav-brand h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .nav-brand p {
+      font-size: 10px;
+      color: #7ecfa0;
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      justify-content: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-center::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-btn {
+      padding: 7px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255, 255, 255, .72);
+      font: 600 12px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .nav-btn.active {
+      color: #fff;
+      background: rgba(255, 255, 255, .15);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .nb-badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 8px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ai-pill removed */
+    .user-menu {
+      position: relative;
+    }
+
+    .user-btn {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .user-av {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+      border: 2px solid rgba(255, 255, 255, .3);
+    }
+
+    .user-name {
+      display: none;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border-radius: 14px;
+      min-width: 190px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+      border: 1px solid var(--border);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: all .22s;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .user-dropdown.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .ud-head {
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ud-head strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .ud-head span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .ud-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: background .15s;
+    }
+
+    .ud-item:hover {
+      background: var(--sage);
+    }
+
+    .ud-item.danger {
+      color: var(--red);
+    }
+
+    .ud-item.danger:hover {
+      background: #fdecea;
+    }
+
+    /* PAGE */
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeUp .3s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* GREET */
+    .greet-card {
+      background: linear-gradient(130deg, #1a4a2e, #1f5535 40%, #2d6a4f);
+      border-radius: 20px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 6px 28px rgba(26, 74, 46, .35);
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+
+    .greet-card::before {
+      content: '';
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .03);
+      pointer-events: none;
+    }
+
+    .greet-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .greet-text h2 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .greet-text p {
+      font-size: 13px;
+      color: #9ecfb8;
+    }
+
+    .greet-stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .gs {
+      text-align: center;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 10px;
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .gs-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .gs-lbl {
+      font-size: 10px;
+      color: #9ecfb8;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    /* KPI */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      border-top: 3px solid transparent;
+    }
+
+    .kpi-card.green {
+      border-top-color: var(--mint);
+    }
+
+    .kpi-card.gold {
+      border-top-color: var(--gold);
+    }
+
+    .kpi-card.blue {
+      border-top-color: #3b82f6;
+    }
+
+    .kpi-card.red {
+      border-top-color: var(--red);
+    }
+
+    .kpi-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--forest);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* COMMODITY CHIPS */
+    .comm-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .comm-chip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 20px;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .comm-chip:hover {
+      border-color: var(--mint);
+      background: var(--sage);
+    }
+
+    .comm-chip.active {
+      border-color: var(--forest);
+      background: var(--forest);
+      color: #fff;
+    }
+
+    .chip-price {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      opacity: .85;
+    }
+
+    /* FORECAST */
+    .forecast-hero {
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(26, 74, 46, .08);
+      overflow: hidden;
+      margin-bottom: 22px;
+    }
+
+    .fc-header {
+      background: linear-gradient(135deg, var(--forest), var(--leaf));
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .fc-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .fc-header p {
+      font-size: 11px;
+      color: #9ecfb8;
+      margin-top: 2px;
+    }
+
+    .fc-sel-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, .12);
+      border-radius: 10px;
+      padding: 7px 12px;
+    }
+
+    .fc-sel-wrap label {
+      font-size: 12px;
+      color: #9ecfb8;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .fc-sel-wrap select {
+      background: transparent;
+      border: none;
+      color: #fff;
+      font: 600 13px 'DM Sans', sans-serif;
+      outline: none;
+      cursor: pointer;
+      min-width: 200px;
+    }
+
+    .fc-sel-wrap select option {
+      background: var(--forest);
+    }
+
+    .fc-body {
+      padding: 22px 24px;
+    }
+
+    .fc-price-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .fc-pbox {
+      background: var(--cream);
+      border-radius: 12px;
+      padding: 14px 16px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .fc-pbox.main {
+      background: var(--forest);
+      border-color: var(--forest);
+    }
+
+    .fc-pbox.main .fc-plabel {
+      color: #9ecfb8;
+    }
+
+    .fc-pbox.main .fc-pval {
+      color: var(--gold);
+    }
+
+    .fc-plabel {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 5px;
+    }
+
+    .fc-pval {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--forest);
+    }
+
+    .fc-psub {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 3px;
+      color: var(--muted);
+    }
+
+    .fc-placeholder {
+      text-align: center;
+      padding: 44px 20px;
+      color: var(--muted);
+    }
+
+    .fc-placeholder .phi {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    /* REC */
+    .rec-box {
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      border: 2px solid;
+    }
+
+    .rec-hold {
+      background: linear-gradient(135deg, #eafaf1, #d5f5e3);
+      border-color: #6dbb8a;
+    }
+
+    .rec-sell {
+      background: linear-gradient(135deg, #fef9c3, #fde68a);
+      border-color: #f59e0b;
+    }
+
+    .rec-now {
+      background: linear-gradient(135deg, #fdecea, #fadadd);
+      border-color: #f1948a;
+    }
+
+    .rec-stable {
+      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
+      border-color: #38bdf8;
+    }
+
+    .rec-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .rec-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--forest);
+      margin-bottom: 5px;
+    }
+
+    .rec-body {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* PROFIT */
+    .profit-result {
+      background: linear-gradient(135deg, var(--forest), var(--leaf));
+      border-radius: 14px;
+      padding: 20px;
+      color: #fff;
+      margin-top: 14px;
+    }
+
+    .profit-result h4 {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .pr-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .pr-row:last-child {
+      border-bottom: none;
+      padding-top: 10px;
+    }
+
+    .pr-label {
+      font-size: 12px;
+      color: #9ecfb8;
+    }
+
+    .pr-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .pr-extra {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--gold-l);
+    }
+
+    /* CARD */
+    .card-vn {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .card-hd {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-hd h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--forest);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .card-bd {
+      padding: 18px;
+    }
+
+    /* TABLE */
+    .tbl-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--sage);
+    }
+
+    th {
+      padding: 9px 13px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--forest);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    td {
+      padding: 10px 13px;
+      border-bottom: 1px solid #f0ede6;
+      color: var(--dark);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fafdf8;
+    }
+
+    .bs {
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bs-active {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .bs-pending {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .bs-accepted {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .bs-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .bs-sold {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    /* FORM */
+    .form-vn .fg {
+      margin-bottom: 13px;
+    }
+
+    .form-vn label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .form-vn input,
+    .form-vn select,
+    .form-vn textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #ddd8ce;
+      border-radius: 10px;
+      font: 14px 'DM Sans', sans-serif;
+      color: var(--dark);
+      background: var(--cream);
+      outline: none;
+      transition: border-color .2s;
+      appearance: none;
+    }
+
+    .form-vn input:focus,
+    .form-vn select:focus,
+    .form-vn textarea:focus {
+      border-color: var(--leaf);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, .1);
+    }
+
+    .sel-wrap {
+      position: relative;
+    }
+
+    .sel-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+    }
+
+    .form-vn select {
+      appearance: none;
+    }
+
+    /* BUTTONS */
+    .btn-vn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font: 700 13px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--forest);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--leaf);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-l);
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--dark);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--leaf);
+      color: var(--leaf);
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--red);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .btn-success-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-success-sm:hover {
+      background: #15803d;
+      color: #fff;
+    }
+
+    .btn-danger-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+      background: #fee2e2;
+      color: var(--red);
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-danger-sm:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    /* CONTACTS */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .contact-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 13px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      transition: all .2s;
+    }
+
+    .contact-card:hover {
+      border-color: var(--mint);
+      box-shadow: 0 4px 14px rgba(45, 106, 79, .1);
+    }
+
+    .cc-av {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .cc-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .cc-loc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .cc-phone {
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--leaf);
+      background: var(--sage);
+      padding: 4px 9px;
+      border-radius: 14px;
+      white-space: nowrap;
+    }
+
+    /* NOTIF */
+    .notif-item {
+      display: flex;
+      gap: 11px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .notif-unread {
+      background: var(--sage);
+    }
+
+    .notif-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .notif-body {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+
+    .notif-time {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    /* CHATBOT */
+    @keyframes floatBot {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    #chat-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--forest), var(--leaf));
+      color: #fff;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(26, 74, 46, .4), 0 0 0 3px rgba(232, 160, 32, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: floatBot 2.8s ease-in-out infinite;
+    }
+
+    #chat-btn:hover {
+      animation: none;
+      transform: scale(1.1);
+    }
+
+    .chat-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--gold);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    #chat-win {
+      position: fixed;
+      bottom: 102px;
+      right: 28px;
+      z-index: 998;
+      width: 340px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, .2);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(45, 106, 79, .12);
+    }
+
+    #chat-win.open {
+      display: flex;
+      animation: sUp .25s ease;
+    }
+
+    @keyframes sUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ch-hd {
+      background: var(--forest);
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ch-av {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-l));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .ch-title {
+      margin-left: 9px;
+    }
+
+    .ch-title h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .ch-title p {
+      font-size: 11px;
+      color: #9ecfb8;
+    }
+
+    .ch-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 17px;
+      cursor: pointer;
+      opacity: .7;
+    }
+
+    .ch-msgs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 11px 13px;
+      max-height: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg {
+      max-width: 84%;
+      padding: 8px 11px;
+      border-radius: 11px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .msg.bot {
+      background: var(--sage);
+      color: var(--dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 3px;
+    }
+
+    .msg.usr {
+      background: var(--forest);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 3px;
+    }
+
+    .msg.typ {
+      background: var(--sage);
+      color: var(--muted);
+      font-style: italic;
+      align-self: flex-start;
+    }
+
+    .ch-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      padding: 6px 11px 7px;
+      border-top: 1px solid #f0ede6;
+    }
+
+    .cchip {
+      padding: 4px 9px;
+      background: var(--sage);
+      border: 1px solid rgba(45, 106, 79, .15);
+      border-radius: 18px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--leaf);
+      cursor: pointer;
+      transition: all .18s;
+    }
+
+    .cchip:hover {
+      background: var(--leaf);
+      color: #fff;
+    }
+
+    .ch-foot {
+      display: flex;
+      padding: 9px 11px;
+      gap: 6px;
+      border-top: 1px solid #f0ede6;
+    }
+
+    .ch-inp {
+      flex: 1;
+      padding: 8px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font: 13px 'DM Sans', sans-serif;
+      outline: none;
+    }
+
+    .ch-inp:focus {
+      border-color: var(--leaf);
+    }
+
+    .ch-send {
+      padding: 8px 13px;
+      background: var(--forest);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast-wrap {
+      position: fixed;
+      top: 76px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .toast-vn {
+      background: #fff;
+      border-radius: 11px;
+      padding: 11px 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+      border-left: 4px solid var(--mint);
+      font-size: 13px;
+      font-weight: 500;
+      animation: slideIn .3s ease;
+      min-width: 240px;
+    }
+
+    .toast-vn.error {
+      border-left-color: var(--red);
+    }
+
+    .toast-vn.gold {
+      border-left-color: var(--gold);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(36px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media(max-width:992px) {
+      .nav-center {
+        display: none !important;
+      }
+
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .fc-price-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:576px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .page {
+        padding: 14px 10px 80px;
+      }
+
+      #chat-win {
+        width: calc(100vw - 32px);
+        right: 16px;
+      }
+
+      .greet-card {
+        flex-direction: column;
+      }
+    }
+
+    /* ── PAGE LAYOUT ── */
+    .layout {
+      min-height: 100vh;
+    }
+
+    .main-content {
+      flex: 1;
+    }
+
+    @media(max-width:992px) {
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-content">
+      <nav class="navbar-vn">
+        <div style="display:flex;align-items:center;gap:12px;"><button
+            style="display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;" class="sb-toggle"
+            id="sb-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+              class="bi bi-list"></i></button>
+          <div class="nav-brand">
+            <h1>Vila<em>Neram</em></h1>
+            <p>Right Time, Right Price, Every Time!</p>
+          </div>
+        </div>
+        <div class="nav-center">
+          <button class="nav-btn active" onclick="showSection('dashboard',this)"><i class="bi bi-speedometer2"></i>
+            Dashboard</button>
+          <button class="nav-btn" onclick="showSection('forecast',this)"><i class="bi bi-graph-up-arrow"></i> Price
+            Forecast</button>
+          <button class="nav-btn" onclick="showSection('profit',this)"><i class="bi bi-calculator"></i> Profit
+            Calc</button>
+          <button class="nav-btn" onclick="showSection('supply',this)"><i class="bi bi-plus-circle"></i> Post
+            Supply</button>
+          <button class="nav-btn" onclick="showSection('demands',this)"><i class="bi bi-shop"></i> Nearby
+            Demands</button>
+          <button class="nav-btn" onclick="showSection('requests',this)"><i class="bi bi-send"></i> My Requests</button>
+          <button class="nav-btn" onclick="showSection('offers',this)"><i class="bi bi-inbox"></i> Offers <span
+              class="nb-badge" id="offer-badge" style="display:none;">0</span></button>
+          <button class="nav-btn" onclick="showSection('shopkeepers',this)"><i class="bi bi-people"></i>
+            Shopkeepers</button>
+        </div>
+        <div class="nav-right">
+          <div class="user-menu">
+            <div class="user-btn" onclick="toggleUserMenu(event)">
+              <div class="user-av" id="user-av">F</div>
+            </div>
+            <div class="user-dropdown" id="user-dropdown">
+              <div class="ud-head"><strong id="ud-name">—</strong><span id="ud-loc">—</span></div>
+              <button class="ud-item danger" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> Logout</button>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Mobile bottom nav -->
+      <div
+        style="position:fixed;bottom:0;left:0;right:0;background:var(--forest);z-index:500;display:none;padding:6px 8px;overflow-x:auto;"
+        id="mobile-nav">
+        <div style="display:flex;gap:4px;justify-content:center;min-width:max-content;margin:0 auto;">
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;"
+            onclick="showSection('dashboard',this)">🏠</button>
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;"
+            onclick="showSection('forecast',this)">📈</button>
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;"
+            onclick="showSection('profit',this)">💰</button>
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;"
+            onclick="showSection('supply',this)">📦</button>
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;"
+            onclick="showSection('demands',this)">🏪</button>
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;"
+            onclick="showSection('requests',this)">📤</button>
+          <button class="nav-btn" style="font-size:11px;padding:5px 8px;color:#fca5a5;" onclick="doLogout()">🚪</button>
+        </div>
+      </div>
+
+      <div class="page">
+
+        <!-- DASHBOARD -->
+        <div class="section active" id="sec-dashboard">
+          <div class="greet-card">
+            <div class="greet-text">
+              <h2 id="greet-h">Namaskaram, <em>Farmer</em>! 🙏</h2>
+              <p id="greet-p">Loading your dashboard…</p>
+            </div>
+            <div class="greet-stats">
+              <div class="gs">
+                <div class="gs-num" id="gs-comm">—</div>
+                <div class="gs-lbl">Commodities</div>
+              </div>
+              <div class="gs">
+                <div class="gs-num">7</div>
+                <div class="gs-lbl">Day Forecast</div>
+              </div>
+              <div class="gs">
+                <div class="gs-num" id="gs-req">—</div>
+                <div class="gs-lbl">Requests</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <h5 style="font-family:'Playfair Display',serif;color:var(--forest);font-size:16px;">🌾 My Commodities —
+              Click for AI Forecast</h5>
+            <button class="btn-vn btn-sm btn-outline" onclick="showSection('forecast',null)">All Commodities →</button>
+          </div>
+          <div class="comm-chips" id="comm-chips"><span style="color:var(--muted);font-size:13px;">Loading…</span></div>
+          <div id="dashboard-forecast-panel"></div>
+
+          <div class="kpi-row">
+            <div class="kpi-card green">
+              <div class="kpi-icon">📦</div>
+              <div class="kpi-val" id="kpi-supply">—</div>
+              <div class="kpi-label">Active Listings</div>
+            </div>
+            <div class="kpi-card gold">
+              <div class="kpi-icon">🏪</div>
+              <div class="kpi-val" id="kpi-demands">—</div>
+              <div class="kpi-label">Nearby Demands</div>
+            </div>
+            <div class="kpi-card blue">
+              <div class="kpi-icon">📤</div>
+              <div class="kpi-val" id="kpi-requests">—</div>
+              <div class="kpi-label">Requests Sent</div>
+            </div>
+            <div class="kpi-card red">
+              <div class="kpi-icon">🔔</div>
+              <div class="kpi-val" id="kpi-notifs">—</div>
+              <div class="kpi-label">Unread Alerts</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRICE FORECAST -->
+        <div class="section" id="sec-forecast">
+          <div class="forecast-hero">
+            <div class="fc-header">
+              <div>
+                <h3>📈 XGBoost Price Forecast</h3>
+                <p>AI 7-day price prediction — official Ecostat Kerala data</p>
+              </div>
+              <div class="fc-sel-wrap">
+                <label>Commodity:</label>
+                <select id="fc-commodity" onchange="loadForecast()">
+                  <option value="">— Select —</option>
+                </select>
+              </div>
+            </div>
+            <div class="fc-body">
+              <div id="fc-placeholder" class="fc-placeholder">
+                <div class="phi">📊</div>
+                <p>Select a commodity above to see the 7-day AI price forecast</p>
+              </div>
+              <div id="fc-price-row" class="fc-price-row" style="display:none;">
+                <div class="fc-pbox main">
+                  <div class="fc-plabel">Today's Price</div>
+                  <div class="fc-pval" id="fc-today">—</div>
+                  <div class="fc-psub" id="fc-change" style="color:#9ecfb8;">Live market</div>
+                </div>
+                <div class="fc-pbox">
+                  <div class="fc-plabel">7-Day Peak</div>
+                  <div class="fc-pval" id="fc-peak" style="color:var(--gold);">—</div>
+                  <div class="fc-psub" id="fc-peak-day">—</div>
+                </div>
+                <div class="fc-pbox">
+                  <div class="fc-plabel">7-Day Low</div>
+                  <div class="fc-pval" id="fc-low" style="color:var(--muted);">—</div>
+                  <div class="fc-psub">AI forecast</div>
+                </div>
+                <div class="fc-pbox">
+                  <div class="fc-plabel">Trend</div>
+                  <div class="fc-pval" id="fc-trend" style="font-size:15px;">—</div>
+                  <div class="fc-psub" id="fc-pct">7-day</div>
+                </div>
+              </div>
+              <div style="height:270px;display:none;" id="fc-chart-wrap"><canvas id="fc-chart"></canvas></div>
+              <div id="fc-rec" style="margin-top:14px;"></div>
+            </div>
+          </div>
+          <div class="card-vn" id="fc-pred-card" style="display:none;">
+            <div class="card-hd">
+              <h3><i class="bi bi-table"></i> Day-by-Day Prediction</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Day</th>
+                    <th>Date</th>
+                    <th>Predicted Price</th>
+                    <th>Change vs Today</th>
+                    <th>Trend</th>
+                  </tr>
+                </thead>
+                <tbody id="fc-pred-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- PROFIT CALCULATOR -->
+        <div class="section" id="sec-profit">
+          <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">💰 Profit Calculator</h4>
+          <p class="text-muted mb-3" style="font-size:13px;">Should you sell today or wait for the predicted price peak?
+          </p>
+          <div class="row g-4">
+            <div class="col-lg-5">
+              <div class="card-vn">
+                <div class="card-hd">
+                  <h3><i class="bi bi-calculator text-success"></i> Calculate</h3>
+                </div>
+                <div class="card-bd">
+                  <div class="form-vn">
+                    <div class="fg"><label>Commodity</label>
+                      <div class="sel-wrap"><select id="pc-commodity">
+                          <option value="">— Select —</option>
+                        </select></div>
+                    </div>
+                    <div class="row g-2">
+                      <div class="col-7">
+                        <div class="fg"><label>Quantity</label><input type="number" id="pc-qty" placeholder="e.g. 50"
+                            min="0.1" step="0.1" /></div>
+                      </div>
+                      <div class="col-5">
+                        <div class="fg"><label>Unit</label>
+                          <div class="sel-wrap"><select id="pc-unit">
+                              <option value="kg">kg</option>
+                              <option value="bunch">bunch</option>
+                              <option value="nos">nos</option>
+                              <option value="litre">litre</option>
+                            </select></div>
+                        </div>
+                      </div>
+                    </div>
+                    <button class="btn-vn btn-gold w-100" onclick="calcProfit()"><i class="bi bi-lightning-charge"></i>
+                      Calculate</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-7">
+              <div id="profit-result"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- POST SUPPLY -->
+        <div class="section" id="sec-supply">
+          <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">📦 Post Supply Listing</h4>
+          <p class="text-muted mb-3" style="font-size:13px;">List your produce — active for 3 days, visible to
+            shopkeepers in your panchayath</p>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="card-vn">
+                <div class="card-hd">
+                  <h3><i class="bi bi-plus-circle text-success"></i> New Listing</h3>
+                </div>
+                <div class="card-bd">
+                  <div id="supply-msg"></div>
+                  <div class="form-vn">
+                    <div class="fg"><label>Commodity <span style="color:var(--red)">*</span></label>
+                      <div class="sel-wrap"><select id="s-commodity"
+                          onchange="checkCustomComm('s-commodity','s-custom-comm-wrap')">
+                          <option value="">— Select commodity —</option>
+                          <option value="__custom__">+ Enter custom commodity…</option>
+                        </select></div>
+                      <div id="s-custom-comm-wrap" style="display:none;margin-top:6px;"><input type="text"
+                          id="s-custom-comm" placeholder="Type your commodity name"
+                          style="width:100%;padding:9px 13px;border:1.5px solid var(--gold);border-radius:10px;font:13px 'DM Sans',sans-serif;background:#fff;outline:none;" />
+                        <div style="font-size:11px;color:var(--gold);margin-top:3px;">⚠ Custom commodity — not in
+                          Ecostat price data, no AI forecast available.</div>
+                      </div>
+                    </div>
+                    <div class="row g-2">
+                      <div class="col-7">
+                        <div class="fg"><label>Quantity <span style="color:var(--red)">*</span></label><input
+                            type="number" id="s-qty" placeholder="e.g. 50" /></div>
+                      </div>
+                      <div class="col-5">
+                        <div class="fg"><label>Unit</label>
+                          <div class="sel-wrap"><select id="s-unit">
+                              <option value="kg">kg</option>
+                              <option value="bunch">bunch</option>
+                              <option value="nos">nos</option>
+                              <option value="litre">litre</option>
+                              <option value="quintal">quintal</option>
+                            </select></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="fg"><label>Expected Price/Unit (optional)</label><input type="number" id="s-price"
+                        placeholder="₹ per unit" /></div>
+                    <div class="fg"><label>Description (optional)</label><textarea id="s-desc" rows="2"
+                        placeholder="Quality, harvest date…"></textarea></div>
+                    <div class="fg"><label>Your Location</label><input type="text" id="s-loc" readonly
+                        style="background:var(--sage);color:var(--leaf);font-weight:600;cursor:not-allowed;" /></div>
+                    <button class="btn-vn btn-primary w-100" onclick="submitSupply()"><i class="bi bi-send"></i> Post
+                      Listing</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card-vn">
+                <div class="card-hd">
+                  <h3><i class="bi bi-list-ul"></i> My Listings</h3>
+                </div>
+                <div class="tbl-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Commodity</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Expires</th>
+                        <th>Status</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody id="my-supply-tb">
+                      <tr>
+                        <td colspan="6" class="text-center text-muted py-3">Loading…</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEARBY DEMANDS -->
+        <div class="section" id="sec-demands">
+          <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">🏪 Nearby Shop Demands</h4>
+          <p class="text-muted mb-3" style="font-size:13px;">Shopkeepers in <strong id="my-lb">your panchayath</strong>
+            looking for produce</p>
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-shop text-warning"></i> Active Demands</h3><span class="text-muted"
+                style="font-size:12px;" id="demands-count"></span>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Shopkeeper</th>
+                    <th>Phone</th>
+                    <th>Commodity</th>
+                    <th>Qty</th>
+                    <th>Max Price</th>
+                    <th>Expires</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="demands-tb">
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- MY REQUESTS -->
+        <div class="section" id="sec-requests">
+          <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">📤 My Requests</h4>
+          <p class="text-muted mb-3" style="font-size:13px;">Requests you sent to shopkeepers</p>
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-send text-primary"></i> Sent Requests</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Shopkeeper</th>
+                    <th>My Supply</th>
+                    <th>Their Demand</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Reply</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="requests-tb">
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- OFFERS RECEIVED FROM SHOPKEEPERS -->
+        <div class="section" id="sec-offers">
+          <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">📥 Purchase Offers from
+            Shopkeepers</h4>
+          <p class="text-muted mb-3" style="font-size:13px;">Shopkeepers in your area who want to buy your listed
+            produce — accept or reject their offers</p>
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-inbox text-warning"></i> Offers Received</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Shopkeeper</th>
+                    <th>Phone</th>
+                    <th>Wants to Buy</th>
+                    <th>Quantity</th>
+                    <th>Offered Price</th>
+                    <th>Their Message</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="offers-tb">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-4">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SHOPKEEPERS -->
+        <div class="section" id="sec-shopkeepers">
+          <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">🏪 Shopkeepers in My
+            Panchayath</h4>
+          <p class="text-muted mb-3" style="font-size:13px;">Contact shopkeepers directly</p>
+          <div class="contact-grid" id="shopkeepers-grid">
+            <div class="text-muted py-3">Loading…</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- REQUEST MODAL -->
+      <div class="modal fade" id="reqModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content" style="border-radius:16px;border:none;">
+            <div class="modal-header"
+              style="background:linear-gradient(135deg,var(--forest),var(--leaf));border-radius:16px 16px 0 0;">
+              <h5 class="modal-title text-white" style="font-family:'Playfair Display',serif;">Send Request</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+              <div id="req-msg-err"></div>
+              <p style="font-size:13px;color:var(--muted);margin-bottom:14px;" id="req-info"></p>
+              <div class="form-vn">
+                <div class="fg"><label>Message (optional)</label><textarea id="req-msg-txt" rows="2"
+                    placeholder="e.g. I can deliver tomorrow…"></textarea></div>
+              </div>
+              <input type="hidden" id="req-demand-id" />
+            </div>
+            <div class="modal-footer">
+              <button class="btn-vn btn-outline btn-sm" data-bs-dismiss="modal">Cancel</button>
+              <button class="btn-vn btn-primary btn-sm" onclick="submitRequest()"><i class="bi bi-send"></i> Send
+                Request</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- OFFER RESPOND MODAL — farmer accepts/rejects shopkeeper offer -->
+      <div class="modal fade" id="offerRespondModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content" style="border-radius:16px;border:none;">
+            <div class="modal-header" id="offer-respond-hd"
+              style="background:linear-gradient(135deg,var(--forest),var(--leaf));border-radius:16px 16px 0 0;">
+              <h5 class="modal-title text-white" style="font-family:'Playfair Display',serif;" id="offer-respond-title">
+                Respond to Offer</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+              <div id="offer-respond-err"></div>
+              <p style="font-size:13px;color:var(--muted);margin-bottom:14px;" id="offer-respond-info"></p>
+              <div class="form-vn">
+                <div class="fg"><label>Note to Shopkeeper (optional)</label>
+                  <textarea id="offer-respond-note" rows="2"
+                    placeholder="e.g. I can arrange delivery tomorrow…"></textarea>
+                </div>
+              </div>
+              <input type="hidden" id="offer-respond-id" />
+              <input type="hidden" id="offer-respond-action" />
+            </div>
+            <div class="modal-footer">
+              <button class="btn-vn btn-outline btn-sm" data-bs-dismiss="modal">Cancel</button>
+              <button class="btn-vn btn-sm" id="offer-respond-btn" onclick="submitOfferRespond()">Confirm</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHATBOT -->
+      <button id="chat-btn" onclick="toggleChat()">🌾<span class="chat-badge">AI</span></button>
+      <div id="chat-win">
+        <div class="ch-hd">
+          <div class="d-flex align-items-center">
+            <div class="ch-av">🤖</div>
+            <div class="ch-title">
+              <h4>VilaNeram AI</h4>
+              <p>Agricultural assistant</p>
+            </div>
+          </div>
+          <button class="ch-close" onclick="toggleChat()">✕</button>
+        </div>
+        <div class="ch-msgs" id="ch-msgs">
+          <div class="msg bot">🙏 Namaskaram! Ask me about prices, when to sell, or marketplace tips!</div>
+        </div>
+        <div class="ch-chips">
+          <div class="cchip" onclick="sc('Should I sell today?')">💰 Sell today?</div>
+          <div class="cchip" onclick="sc('Which price is rising?')">📈 Rising</div>
+          <div class="cchip" onclick="sc('Best time to sell this week?')">⏰ Best time</div>
+        </div>
+        <div class="ch-foot">
+          <input class="ch-inp" id="ch-inp" type="text" placeholder="Ask about prices…"
+            onkeydown="if(event.key==='Enter')sm()" />
+          <button class="ch-send" onclick="sm()">➤</button>
+        </div>
+      </div>
+      <div class="toast-wrap" id="toast-wrap"></div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script>
+        var USER = null, TOKEN = null, ALL_COMM = [], MY_COMM = [], ALL_SUPPLY = [];
+        var chatOpen = false, chatH = [], chartInst = null, dashChartInst = null;
+
+        window.onload = async function () {
+          TOKEN = localStorage.getItem('token');
+          if (!TOKEN) { window.location.href = '/'; return; }
+          if (localStorage.getItem('role') === 'shopkeeper') { window.location.href = '/shopkeeper'; return; }
+          if (localStorage.getItem('role') === 'admin') { window.location.href = '/admin'; return; }
+          if (window.innerWidth <= 992) document.getElementById('mobile-nav').style.display = 'block';
+          await loadUser();
+          await Promise.all([loadCommodities(), loadDashboardData()]);
+          loadNotifCount();
+          loadOffersReceived(); // load offers in background so badge shows
+        };
+
+        async function loadUser() {
+          try {
+            var r = await api('/api/auth/me'); USER = r; MY_COMM = r.commodities || [];
+            var ini = (r.name || 'F').split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase() || 'F';
+            document.getElementById('user-av').textContent = ini;
+            if (document.getElementById('user-name')) document.getElementById('user-name').textContent = r.name || 'Farmer';
+            document.getElementById('ud-name').textContent = r.name || 'Farmer';
+            document.getElementById('ud-loc').textContent = '📍 ' + (r.local_body || r.district || 'Kerala');
+            var fn = (r.name || 'Farmer').split(' ')[0];
+            document.getElementById('greet-h').innerHTML = 'Namaskaram, <em>' + esc(fn) + '</em>! 🙏';
+            document.getElementById('greet-p').textContent = 'You have ' + MY_COMM.length + ' commodit' + (MY_COMM.length === 1 ? 'y' : 'ies') + ' tracked. Click any below for a 7-day AI forecast.';
+            document.getElementById('gs-comm').textContent = MY_COMM.length;
+            document.getElementById('s-loc').value = (r.local_body || '') + (r.district ? ', ' + r.district : '');
+            document.getElementById('my-lb').textContent = r.local_body || 'your panchayath';
+          } catch (e) { doLogout(); }
+        }
+
+        async function loadCommodities() {
+          try {
+            var r = await api('/api/commodities'); ALL_COMM = r.commodities || [];
+            ['s-commodity', 'fc-commodity', 'pc-commodity'].forEach(function (id) {
+              var sel = document.getElementById(id); if (!sel) return;
+              var hasCustom = id === 's-commodity';
+              sel.innerHTML = '<option value="">— Select commodity —</option>';
+              if (hasCustom) { var oc = document.createElement('option'); oc.value = '__custom__'; oc.textContent = '+ Enter custom commodity…'; sel.appendChild(oc); }
+              ALL_COMM.forEach(function (cm) { var o = document.createElement('option'); o.value = cm; o.textContent = cm; sel.appendChild(o); });
+            });
+            buildCommChips();
+          } catch (e) { }
+        }
+
+        function buildCommChips() {
+          var wrap = document.getElementById('comm-chips');
+          if (!MY_COMM.length) { wrap.innerHTML = '<span style="color:var(--muted);font-size:13px;">No commodities in your profile. Update your profile to add commodities.</span>'; return; }
+          wrap.innerHTML = '';
+          MY_COMM.forEach(function (c) {
+            var chip = document.createElement('div'); chip.className = 'comm-chip'; chip.id = 'chip-' + sl(c);
+            chip.innerHTML = '<span>' + ico(c) + ' ' + esc(sn(c)) + '</span><span class="chip-price" id="cpr-' + sl(c) + '">…</span>';
+            chip.onclick = function () {
+              document.querySelectorAll('.comm-chip').forEach(ch => ch.classList.remove('active'));
+              chip.classList.add('active'); loadDashForecast(c);
+            };
+            wrap.appendChild(chip);
+            fetchChipPrice(c);
+          });
+        }
+
+        async function fetchChipPrice(name) {
+          try {
+            var r = await api('/api/commodities/' + encodeURIComponent(name) + '/price');
+            var el = document.getElementById('cpr-' + sl(name));
+            if (el) {
+              var chg = r.change_pct; var arr = chg > 0 ? '▲' : chg < 0 ? '▼' : '→'; var col = chg > 0 ? '#22c55e' : chg < 0 ? 'var(--red)' : 'var(--gold)';
+              el.innerHTML = '<span style="font-family:\'DM Mono\',monospace;">₹' + r.today.toFixed(2) + '</span> <span style="color:' + col + '">' + arr + '</span>';
+            }
+          } catch (e) { var el = document.getElementById('cpr-' + sl(name)); if (el) el.textContent = '—'; }
+        }
+
+        async function loadDashForecast(comm) {
+          var panel = document.getElementById('dashboard-forecast-panel');
+          panel.innerHTML = '<div class="forecast-hero"><div style="padding:36px;text-align:center;"><div class="spinner-border text-success" style="width:2rem;height:2rem;" role="status"></div><p class="mt-3 text-muted" style="font-size:13px;">Loading AI forecast for ' + esc(sn(comm)) + '…</p></div></div>';
+          setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+          try {
+            var [pr, pd] = await Promise.all([api('/api/commodities/' + encodeURIComponent(comm) + '/price'), api('/api/predict', 'POST', { commodity: comm, days: 7 })]);
+            var today = pr.today, preds = pd.predictions, trend = pd.trend, chg = pr.change_pct;
+            var peak = Math.max(...preds.map(p => p.price)); var low = Math.min(...preds.map(p => p.price)); var peakDay = preds.findIndex(p => p.price === peak) + 1;
+            var td = trend.overall_change > 1 ? 'rising' : trend.overall_change < -1 ? 'falling' : 'stable';
+            var rc = td === 'rising' ? 'rec-hold' : td === 'falling' ? 'rec-now' : 'rec-stable';
+            var ri = td === 'rising' ? '⏳' : td === 'falling' ? '🚨' : '⚖️';
+            panel.innerHTML = `<div class="forecast-hero"><div class="fc-header"><div><h3>📈 ${esc(sn(comm))} — AI Forecast</h3><p>7-day prediction from Ecostat Kerala</p></div></div><div class="fc-body">
+      <div class="fc-price-row">
+        <div class="fc-pbox main"><div class="fc-plabel">Today's Price</div><div class="fc-pval">₹${today.toFixed(2)}</div><div class="fc-psub" style="color:${chg > 0 ? '#52e88a' : chg < 0 ? '#f87171' : '#9ecfb8'}">${chg > 0 ? '▲ +' : chg < 0 ? '▼ ' : '→ '}${Math.abs(chg).toFixed(1)}%</div></div>
+        <div class="fc-pbox"><div class="fc-plabel">7-Day Peak</div><div class="fc-pval" style="color:var(--gold)">₹${peak.toFixed(2)}</div><div class="fc-psub">Best sell: Day ${peakDay}</div></div>
+        <div class="fc-pbox"><div class="fc-plabel">7-Day Low</div><div class="fc-pval" style="color:var(--muted)">₹${low.toFixed(2)}</div><div class="fc-psub">AI forecast</div></div>
+      </div>
+      <div style="height:250px;"><canvas id="dash-fc-chart"></canvas></div>
+      <div class="rec-box ${rc} mt-3"><span class="rec-icon">${ri}</span><div><div class="rec-title">${td === 'rising' ? 'Hold — prices are rising' : td === 'falling' ? 'Sell now — prices are falling' : 'Stable market — sell at your convenience'}</div><div class="rec-body">${esc(trend.short || '')}</div></div></div>
+    </div></div>`;
+            if (dashChartInst) { dashChartInst.destroy(); dashChartInst = null; }
+            var ctx = document.getElementById('dash-fc-chart').getContext('2d');
+            var grad = ctx.createLinearGradient(0, 0, 0, 250); grad.addColorStop(0, 'rgba(45,106,79,.2)'); grad.addColorStop(1, 'rgba(45,106,79,.01)');
+            var labels = ['Today'].concat(preds.map(p => p.date.substring(5)));
+            var prices = [today].concat(preds.map(p => p.price));
+            dashChartInst = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Price (₹)', data: prices, borderColor: '#2d6a4f', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: prices.map((_, i) => i === 0 ? '#e8a020' : '#2d6a4f'), pointBorderColor: '#fff', pointBorderWidth: 2.5, pointRadius: prices.map((_, i) => i === 0 ? 8 : 5) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1a4a2e', titleColor: '#e8a020', bodyColor: '#9ecfb8', padding: 11, cornerRadius: 9, callbacks: { label: c => '  ₹' + c.raw.toFixed(2) } } }, scales: { x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 11 }, color: '#6b7c6e' } }, y: { grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: { size: 11 }, color: '#6b7c6e', callback: v => '₹' + v }, beginAtZero: false } } } });
+          } catch (e) { panel.innerHTML = '<div class="card-vn"><div class="card-bd text-center text-danger py-4">' + esc(e.message || 'Could not load forecast. Model may be training — wait 60 seconds and try again.') + '</div></div>'; }
+        }
+
+        async function loadForecast() {
+          var comm = document.getElementById('fc-commodity').value;
+          if (!comm) { document.getElementById('fc-placeholder').style.display = 'block'; document.getElementById('fc-price-row').style.display = 'none'; document.getElementById('fc-chart-wrap').style.display = 'none'; document.getElementById('fc-pred-card').style.display = 'none'; document.getElementById('fc-rec').innerHTML = ''; return; }
+          document.getElementById('fc-placeholder').style.display = 'none';
+          try {
+            var [pr, pd] = await Promise.all([api('/api/commodities/' + encodeURIComponent(comm) + '/price'), api('/api/predict', 'POST', { commodity: comm, days: 7 })]);
+            var today = pr.today, preds = pd.predictions, trend = pd.trend, chg = pr.change_pct;
+            var peak = Math.max(...preds.map(p => p.price)); var low = Math.min(...preds.map(p => p.price)); var peakDay = preds.findIndex(p => p.price === peak) + 1;
+            var td = trend.overall_change > 1 ? 'rising' : trend.overall_change < -1 ? 'falling' : 'stable';
+            document.getElementById('fc-price-row').style.display = 'grid';
+            document.getElementById('fc-today').textContent = '₹' + today.toFixed(2);
+            document.getElementById('fc-change').textContent = (chg > 0 ? '+' : '') + chg.toFixed(1) + '% from yesterday';
+            document.getElementById('fc-peak').textContent = '₹' + peak.toFixed(2);
+            document.getElementById('fc-peak-day').textContent = 'Best sell: Day ' + peakDay;
+            document.getElementById('fc-low').textContent = '₹' + low.toFixed(2);
+            document.getElementById('fc-trend').textContent = td === 'rising' ? '▲ Rising' : td === 'falling' ? '▼ Falling' : '→ Stable';
+            document.getElementById('fc-trend').style.color = td === 'rising' ? '#22c55e' : td === 'falling' ? 'var(--red)' : 'var(--gold)';
+            document.getElementById('fc-pct').textContent = Math.abs(trend.overall_change || 0).toFixed(1) + '% over 7 days';
+            document.getElementById('fc-chart-wrap').style.display = 'block';
+            if (chartInst) { chartInst.destroy(); chartInst = null; }
+            var ctx = document.getElementById('fc-chart').getContext('2d');
+            var grad = ctx.createLinearGradient(0, 0, 0, 270); grad.addColorStop(0, 'rgba(45,106,79,.2)'); grad.addColorStop(1, 'rgba(45,106,79,.01)');
+            var labels = ['Today'].concat(preds.map(p => p.date.substring(5))); var prices = [today].concat(preds.map(p => p.price));
+            chartInst = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'Price (₹)', data: prices, borderColor: '#2d6a4f', backgroundColor: grad, borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: prices.map((_, i) => i === 0 ? '#e8a020' : '#2d6a4f'), pointBorderColor: '#fff', pointBorderWidth: 2.5, pointRadius: prices.map((_, i) => i === 0 ? 8 : 5) }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1a4a2e', titleColor: '#e8a020', bodyColor: '#9ecfb8', padding: 11, cornerRadius: 9, callbacks: { label: c => '  ₹' + c.raw.toFixed(2) } } }, scales: { x: { grid: { color: 'rgba(0,0,0,.04)' }, ticks: { font: { size: 11 }, color: '#6b7c6e' } }, y: { grid: { color: 'rgba(0,0,0,.05)' }, ticks: { font: { size: 11 }, color: '#6b7c6e', callback: v => '₹' + v }, beginAtZero: false } } } });
+            var rc = td === 'rising' ? 'rec-hold' : td === 'falling' ? 'rec-now' : 'rec-stable'; var ri = td === 'rising' ? '⏳' : td === 'falling' ? '🚨' : '⚖️';
+            document.getElementById('fc-rec').innerHTML = `<div class="rec-box ${rc}"><span class="rec-icon">${ri}</span><div><div class="rec-title">${td === 'rising' ? 'Hold — prices rising' : td === 'falling' ? 'Sell now — prices falling' : 'Stable market'}</div><div class="rec-body">${esc(trend.short || '')}</div></div></div>`;
+            document.getElementById('fc-pred-card').style.display = 'block';
+            document.getElementById('fc-pred-tbody').innerHTML = preds.map((p, i) => {
+              var prev = i === 0 ? today : preds[i - 1].price; var diff = p.price - prev; var pct = (diff / today * 100).toFixed(1);
+              return `<tr><td><strong>Day ${p.day}</strong></td><td>${p.date}</td><td style="font-family:'DM Mono',monospace;font-weight:700;">₹${p.price.toFixed(2)}</td><td style="color:${diff > 0 ? '#22c55e' : diff < 0 ? 'var(--red)' : 'var(--gold)'};font-weight:700;">${diff > 0 ? '▲ +' : diff < 0 ? '▼ ' : '→ '}${Math.abs(pct)}%</td><td><span class="bs ${p.trend === 'Rise' ? 'bs-accepted' : 'bs-rejected'}">${p.trend}</span></td></tr>`;
+            }).join('');
+          } catch (e) { document.getElementById('fc-placeholder').style.display = 'block'; document.getElementById('fc-placeholder').innerHTML = '<div class="phi">⚠️</div><p class="text-danger">' + esc(e.message || 'Forecast failed. Model may be training.') + '</p>'; document.getElementById('fc-chart-wrap').style.display = 'none'; }
+        }
+
+        async function calcProfit() {
+          var comm = document.getElementById('pc-commodity').value; var qty = document.getElementById('pc-qty').value; var unit = document.getElementById('pc-unit').value;
+          if (!comm) return toast('Select a commodity', 'error'); if (!qty || qty <= 0) return toast('Enter valid quantity', 'error');
+          try {
+            var r = await api('/api/profit-calculator', 'POST', { commodity: comm, quantity: parseFloat(qty), unit });
+            var ac = r.action === 'HOLD' ? 'rec-hold' : r.action === 'SELL_NOW' ? 'rec-now' : 'rec-stable'; var ic = r.action === 'HOLD' ? '⏳' : r.action === 'SELL_NOW' ? '🚨' : '⚖️';
+            document.getElementById('profit-result').innerHTML = `<div class="profit-result"><h4>📊 ${esc(r.commodity)} — ${r.quantity} ${r.unit}</h4>
+      <div class="pr-row"><span class="pr-label">Today's Price</span><span class="pr-value">₹${r.today_price.toFixed(2)}/${r.unit}</span></div>
+      <div class="pr-row"><span class="pr-label">If You Sell Today</span><span class="pr-value">₹${r.earn_today.toFixed(2)}</span></div>
+      <div class="pr-row"><span class="pr-label">Predicted Peak (Day ${r.peak_day})</span><span class="pr-value">₹${r.predicted_peak.toFixed(2)}/${r.unit}</span></div>
+      <div class="pr-row"><span class="pr-label">Earn at Peak</span><span class="pr-value">₹${r.earn_at_peak.toFixed(2)}</span></div>
+      <div class="pr-row"><span class="pr-label">Extra Potential</span><span class="pr-extra">${r.extra_earning >= 0 ? '+' : ''}₹${r.extra_earning.toFixed(2)}</span></div>
+    </div><div class="rec-box ${ac} mt-3"><span class="rec-icon">${ic}</span><div><div class="rec-title">${r.action.replace('_', ' ')}</div><div class="rec-body">${esc(r.recommendation)}</div></div></div>`;
+          } catch (e) { toast(e.message || 'Calculation failed', 'error'); }
+        }
+
+        async function loadDashboardData() {
+          try {
+            var [supply, demands, requests, notifs] = await Promise.all([api('/api/supply/mine'), api('/api/demand/nearby'), api('/api/requests/sent'), api('/api/notifications/unread-count')]);
+            ALL_SUPPLY = supply;
+            document.getElementById('kpi-supply').textContent = supply.filter(s => s.status === 'active').length;
+            document.getElementById('kpi-demands').textContent = demands.length;
+            document.getElementById('kpi-requests').textContent = requests.length;
+            document.getElementById('gs-req').textContent = requests.length;
+            document.getElementById('kpi-notifs').textContent = notifs.count || 0;
+          } catch (e) { }
+        }
+
+        function checkCustomComm(selId, wrapId) {
+          var sel = document.getElementById(selId); var wrap = document.getElementById(wrapId);
+          if (wrap) wrap.style.display = sel.value === '__custom__' ? 'block' : 'none';
+        }
+        function getCommValue(selId, customId) {
+          var sel = document.getElementById(selId);
+          if (sel.value === '__custom__') {
+            var custom = document.getElementById(customId).value.trim();
+            return custom || null;
+          }
+          return sel.value || null;
+        }
+
+        async function submitSupply() {
+          var comm = getCommValue('s-commodity', 's-custom-comm'); var qty = document.getElementById('s-qty').value; var unit = document.getElementById('s-unit').value; var price = document.getElementById('s-price').value; var desc = document.getElementById('s-desc').value;
+          if (!comm) return toast('Select or enter a commodity', 'error'); if (!qty || qty <= 0) return toast('Enter valid quantity', 'error');
+          try {
+            await api('/api/supply', 'POST', { commodity_name: comm, quantity: parseFloat(qty), unit, expected_price: price ? parseFloat(price) : null, description: desc || null });
+            toast('Supply listing posted!'); document.getElementById('s-commodity').value = ''; document.getElementById('s-qty').value = ''; document.getElementById('s-price').value = ''; document.getElementById('s-desc').value = '';
+            loadMySupply(); loadDashboardData();
+          } catch (e) { toast(e.message || 'Could not post', 'error'); }
+        }
+
+        async function loadMySupply() {
+          try {
+            var rows = await api('/api/supply/mine'); ALL_SUPPLY = rows; var tb = document.getElementById('my-supply-tb');
+            if (!rows.length) { tb.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No listings yet.</td></tr>'; return; }
+            tb.innerHTML = rows.map(r => `<tr><td><strong>${esc(r.commodity_name)}</strong></td><td>${r.quantity} ${r.unit}</td><td>${r.expected_price ? '₹' + r.expected_price : '—'}</td><td style="font-size:11px;">${r.expires_at.substring(0, 10)}</td><td><span class="bs bs-${r.status}">${r.status}</span></td><td>${r.status === 'active' ? `<button class="btn-vn btn-sm btn-danger" onclick="deleteSupply(${r.id})"><i class="bi bi-trash"></i></button>` : '—'}</td></tr>`).join('');
+          } catch (e) { }
+        }
+
+        async function deleteSupply(id) { if (!confirm('Cancel?')) return; try { await api('/api/supply/' + id, 'DELETE'); toast('Cancelled'); loadMySupply(); loadDashboardData(); } catch (e) { toast('Could not cancel', 'error'); } }
+
+        async function loadNearbyDemands() {
+          try {
+            var rows = await api('/api/demand/nearby'); document.getElementById('demands-count').textContent = rows.length + ' demand(s)'; var tb = document.getElementById('demands-tb');
+            if (!rows.length) { tb.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No demands in your panchayath right now.</td></tr>'; return; }
+            tb.innerHTML = rows.map(r => `<tr><td><strong>${esc(r.shopkeeper_name)}</strong></td><td style="font-family:'DM Mono',monospace;font-size:11px;">${esc(r.shopkeeper_mobile || '—')}</td><td>${esc(r.commodity_name)}</td><td>${r.quantity_needed} ${r.unit}</td><td>${r.max_price ? '₹' + r.max_price : '—'}</td><td style="font-size:11px;">${r.expires_at}</td><td><button class="btn-vn btn-sm btn-primary" onclick="openReqModal(${r.id},'${esc(r.shopkeeper_name)}','${esc(r.commodity_name)}',${r.quantity_needed},'${r.unit}')"><i class="bi bi-send"></i> Request</button></td></tr>`).join('');
+          } catch (e) { }
+        }
+
+        function openReqModal(demandId, shopName, comm, qty, unit) {
+          document.getElementById('req-demand-id').value = demandId;
+          document.getElementById('req-info').innerHTML = `<strong>${esc(shopName)}</strong> needs <strong>${qty} ${unit}</strong> of <strong>${esc(comm)}</strong>`;
+          document.getElementById('req-msg-err').innerHTML = '';
+          new bootstrap.Modal(document.getElementById('reqModal')).show();
+        }
+
+        async function submitRequest() {
+          var demandId = document.getElementById('req-demand-id').value; var msg = document.getElementById('req-msg-txt').value.trim();
+          try {
+            await api('/api/requests', 'POST', { supply_id: null, demand_id: parseInt(demandId), message: msg || null });
+            bootstrap.Modal.getInstance(document.getElementById('reqModal')).hide(); toast('Request sent! ✅'); loadDashboardData();
+          } catch (e) { document.getElementById('req-msg-err').innerHTML = '<div style="color:var(--red);font-size:12px;margin-bottom:8px;">' + esc(e.message) + '</div>'; }
+        }
+
+        async function loadMyRequests() {
+          try {
+            var rows = await api('/api/requests/sent'); var tb = document.getElementById('requests-tb');
+            if (!rows.length) { tb.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-4">No requests sent yet. Browse nearby demands to send a request.</td></tr>'; return; }
+            tb.innerHTML = rows.map(r => `<tr><td><strong>${esc(r.shopkeeper_name)}</strong></td><td>${esc(r.supply.commodity_name || '—')} <small>${r.supply.quantity || ''} ${r.supply.unit || ''}</small></td><td>${esc(r.demand.commodity_name || '—')} <small>${r.demand.quantity_needed || ''} ${r.demand.unit || ''}</small></td><td>${r.message || '—'}</td><td><span class="bs bs-${r.status}">${r.status}</span></td><td>${r.shopkeeper_note || '—'}</td><td style="font-size:11px;">${r.created_at}</td></tr>`).join('');
+          } catch (e) { }
+        }
+
+        async function loadOffersReceived() {
+          try {
+            var rows = await api('/api/offers/received');
+            var tb = document.getElementById('offers-tb');
+            if (!rows.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No purchase offers yet. Post supply listings to receive offers from shopkeepers.</td></tr>'; return; }
+            var pending = rows.filter(r => r.status === 'pending').length;
+            var badge = document.getElementById('offer-badge');
+            if (pending > 0) { badge.textContent = pending; badge.style.display = 'inline'; }
+            else { badge.style.display = 'none'; }
+            tb.innerHTML = rows.map(r => {
+              var offerMsg = r.message || '—';
+              var offeredPrice = '—';
+              // Extract offered price from message if embedded
+              var priceMatch = offerMsg.match(/\[Offered Price: ₹?([\d.]+)\/(\w+)\]/);
+              if (priceMatch) { offeredPrice = '₹' + priceMatch[1] + '/' + priceMatch[2]; offerMsg = offerMsg.replace(priceMatch[0], '').trim() || '—'; }
+              return `<tr>
+                <td><strong>${esc(r.shopkeeper_name)}</strong></td>
+                <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--leaf);">📞 ${esc(r.shopkeeper_mobile || '—')}</td>
+                <td>${esc(r.supply.commodity_name || '—')}</td>
+                <td>${r.supply.quantity || '—'} ${r.supply.unit || ''}</td>
+                <td style="font-weight:700;color:var(--forest);">${offeredPrice}</td>
+                <td style="font-size:12px;">${esc(offerMsg)}</td>
+                <td><span class="bs bs-${r.status}">${r.status}</span></td>
+                <td>${r.status === 'pending' ?
+                  `<button class="btn-success-sm me-1" onclick="openOfferRespond(${r.id},'${esc(r.shopkeeper_name)}','accepted')">✓ Accept</button>
+                   <button class="btn-danger-sm" onclick="openOfferRespond(${r.id},'${esc(r.shopkeeper_name)}','rejected')">✕ Reject</button>` : '—'}</td>
+              </tr>`;
+            }).join('');
+          } catch (e) { }
+        }
+
+        function openOfferRespond(offerId, shopName, action) {
+          document.getElementById('offer-respond-id').value = offerId;
+          document.getElementById('offer-respond-action').value = action;
+          document.getElementById('offer-respond-title').textContent = action === 'accepted' ? '✓ Accept Offer' : '✕ Reject Offer';
+          document.getElementById('offer-respond-info').textContent = (action === 'accepted' ? 'Accepting' : 'Rejecting') + ' purchase offer from ' + shopName;
+          document.getElementById('offer-respond-note').value = '';
+          document.getElementById('offer-respond-err').innerHTML = '';
+          var btn = document.getElementById('offer-respond-btn');
+          btn.textContent = action === 'accepted' ? 'Accept Offer' : 'Reject Offer';
+          btn.className = 'btn-vn btn-sm ' + (action === 'accepted' ? 'btn-primary' : 'btn-danger');
+          new bootstrap.Modal(document.getElementById('offerRespondModal')).show();
+        }
+
+        async function submitOfferRespond() {
+          var id = document.getElementById('offer-respond-id').value;
+          var action = document.getElementById('offer-respond-action').value;
+          var note = document.getElementById('offer-respond-note').value.trim();
+          document.getElementById('offer-respond-err').innerHTML = '';
+          try {
+            await api('/api/offers/' + id + '/respond', 'PATCH', { status: action, farmer_note: note || null });
+            bootstrap.Modal.getInstance(document.getElementById('offerRespondModal')).hide();
+            toast(action === 'accepted' ? '✅ Offer accepted! Shopkeeper notified.' : 'Offer rejected.');
+            loadOffersReceived(); loadDashboardData(); loadNotifCount();
+          } catch (e) {
+            document.getElementById('offer-respond-err').innerHTML = '<div style="color:var(--red);font-size:12px;margin-bottom:8px;">' + esc(e.message) + '</div>';
+          }
+        }
+
+        async function loadShopkeepers() {
+          try {
+            var rows = await api('/api/community/shopkeepers'); var g = document.getElementById('shopkeepers-grid');
+            if (!rows.length) { g.innerHTML = '<div class="text-center text-muted py-5" style="grid-column:1/-1"><div style="font-size:44px">🏪</div><p>No shopkeepers in your panchayath yet.</p></div>'; return; }
+            g.innerHTML = rows.map(r => `<div class="contact-card"><div class="cc-av">${r.name[0].toUpperCase()}</div><div><div class="cc-name">${esc(r.name)}</div><div class="cc-loc">📍 ${esc(r.local_body || r.district || '—')}</div></div><div class="cc-phone">📞 ${esc(r.mobile)}</div></div>`).join('');
+          } catch (e) { }
+        }
+
+        async function loadNotifications() {
+          try {
+            var rows = await api('/api/notifications'); var list = document.getElementById('notif-list');
+            if (!rows.length) { list.innerHTML = '<div class="text-center text-muted py-4">No notifications yet.</div>'; return; }
+            list.innerHTML = rows.map(r => `<div class="notif-item ${r.is_read ? '' : 'notif-unread'}" onclick="markRead(${r.id},this)" style="cursor:pointer;">
+      <div class="notif-ico" style="background:${r.type === 'accepted' ? '#dcfce7' : r.type === 'rejected' ? '#fee2e2' : r.type === 'match' ? '#fef9c3' : r.type === 'offer' ? '#fef3c7' : '#e0f2fe'}">${r.type === 'accepted' ? '✅' : r.type === 'rejected' ? '❌' : r.type === 'match' ? '🔔' : r.type === 'offer' ? '🛒' : 'ℹ️'}</div>
+      <div style="flex:1"><div class="notif-title">${esc(r.title)}</div><div class="notif-body">${esc(r.body)}</div><div class="notif-time">${r.created_at}</div></div>
+      ${!r.is_read ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;display:block;"></span>' : ''}
+    </div>`).join('');
+          } catch (e) { }
+        }
+
+        async function markRead(id, el) { try { await api('/api/notifications/' + id + '/read', 'PATCH'); el.classList.remove('notif-unread'); loadNotifCount(); } catch (e) { } }
+        async function markAllRead() { try { await api('/api/notifications/read-all', 'PATCH'); loadNotifications(); loadNotifCount(); } catch (e) { } }
+        async function loadNotifCount() {
+          try {
+            var r = await api('/api/notifications/unread-count'); var n = r.count || 0;
+            document.getElementById('kpi-notifs').textContent = n;
+          } catch (e) { }
+        }
+
+        function showSection(id, btn) {
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.sb-link').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+          document.getElementById('sec-' + id).classList.add('active');
+          if (btn) btn.classList.add('active');
+          if (id === 'demands') loadNearbyDemands();
+          if (id === 'requests') loadMyRequests();
+          if (id === 'offers') loadOffersReceived();
+          if (id === 'shopkeepers') loadShopkeepers();
+          if (id === 'notifications') loadNotifications();
+          if (id === 'supply') loadMySupply();
+          window.scrollTo(0, 0);
+        }
+
+        function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('open'); }
+        document.addEventListener('click', function () { document.getElementById('user-dropdown').classList.remove('open'); });
+
+        var ICO = { 'ash gourd': '🥬', 'banana': '🍌', 'beans': '🫘', 'beetroot': '🟣', 'bengalgram': '🌾', 'bittergourd': '🥒', 'black gram': '🫘', 'brinjal': '🍆', 'cabbage': '🥬', 'canegur': '🍬', 'carrot': '🥕', 'chenai': '🌿', 'chillies': '🌶️', 'coconut oil': '🫙', 'coconut': '🥥', 'colocassia': '🌿', 'coriander': '🌿', 'cucumber': '🥒', 'cuminseed': '🌿', 'dhall': '🫘', 'egg': '🥚', 'garlic': '🧄', 'gingelly': '🫙', 'green gram': '🫘', 'groundnut': '🫙', 'ladies finger': '🥦', 'methy': '🌿', 'milk': '🥛', 'mustard oil': '🫙', 'mustard': '🌼', 'onion': '🧅', 'palmgur': '🍯', 'peas': '🫛', 'plantain': '🍌', 'potato': '🥔', 'pumpkin': '🎃', 'redgram': '🫘', 'refined oil': '🫙', 'rice': '🌾', 'snake gourd': '🥒', 'sugar': '🍬', 'tamarind': '🌰', 'tapioca': '🌿', 'tomato': '🍅', 'turmeric': '🟡', 'vanaspathi': '🫙' };
+        function ico(n) { var l = n.toLowerCase(); for (var k in ICO) { if (l.includes(k)) return ICO[k]; } return '🛒'; }
+        function sl(s) { return s.replace(/[^a-z0-9]/gi, '-').toLowerCase(); }
+        function sn(n) { return n.replace(/\s*\([^)]*\)\s*/g, '').trim() || n; }
+        function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+        async function api(url, method, body) { var opts = { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN } }; if (body) opts.body = JSON.stringify(body); var r = await fetch(url, opts); var d = await r.json(); if (!r.ok) throw new Error(d.detail || 'Request failed'); return d; }
+        function toast(msg, type) { var w = document.getElementById('toast-wrap'); var d = document.createElement('div'); d.className = 'toast-vn ' + (type || ''); d.textContent = msg; w.appendChild(d); setTimeout(() => d.remove(), 3500); }
+        function doLogout() { ['token', 'role', 'name'].forEach(k => localStorage.removeItem(k)); window.location.replace('/index.html'); }
+        function toggleChat() { chatOpen = !chatOpen; document.getElementById('chat-win').classList.toggle('open', chatOpen); if (chatOpen) setTimeout(() => document.getElementById('ch-inp').focus(), 100); }
+        function addMsg(t, r) { var c = document.getElementById('ch-msgs'), d = document.createElement('div'); d.className = 'msg ' + r; d.textContent = t; c.appendChild(d); c.scrollTop = c.scrollHeight; return d; }
+        function sc(t) { document.getElementById('ch-inp').value = t; sm(); }
+        async function sm() { var inp = document.getElementById('ch-inp'), t = inp.value.trim(); if (!t) return; inp.value = ''; addMsg(t, 'usr'); chatH.push({ role: 'user', content: t }); var typ = addMsg('Thinking…', 'typ'); try { var r = await api('/api/chat', 'POST', { message: t, history: chatH.slice(-6) }); typ.remove(); addMsg(r.reply || 'Sorry!', 'bot'); chatH.push({ role: 'assistant', content: r.reply }); } catch (ex) { typ.remove(); addMsg('VilaNeram AI is not available right now.', 'bot'); } }
+      </script>
+    </div><!-- /main-content -->
+  </div><!-- /layout -->
+</body>
+
+</html>

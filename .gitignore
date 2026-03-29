@@ -1,0 +1,9 @@
+vila/
+*.zip
+*.pkl
+*.joblib
+venv/
+v/
+__pycache__/
+*.db
+*.env

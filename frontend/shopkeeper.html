@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>VilaNeram — Shopkeeper Dashboard</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --forest: #1a4a2e;
+      --leaf: #2d6a4f;
+      --mint: #52a872;
+      --sage: #e8f5ee;
+      --gold: #e8a020;
+      --gold-l: #f5c842;
+      --cream: #f7f5ef;
+      --dark: #1c2b22;
+      --muted: #6b7c6e;
+      --border: #dde8e0;
+      --red: #e63946;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--dark);
+    }
+
+    .navbar-vn {
+      background: linear-gradient(135deg, #1a4a2e, #1e5534 60%, #2d6a4f);
+      padding: 0 28px;
+      height: 66px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, .22);
+    }
+
+    .nav-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .nav-brand h1 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .nav-brand p {
+      font-size: 10px;
+      color: #7ecfa0;
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .nav-btn {
+      padding: 7px 12px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255, 255, 255, .72);
+      font: 600 12px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .nav-btn.active {
+      color: #fff;
+      background: rgba(255, 255, 255, .15);
+      border-bottom: 2px solid var(--gold);
+    }
+
+    .nb-badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 1px 5px;
+      border-radius: 8px;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ai-pill removed */
+    .user-menu {
+      position: relative;
+    }
+
+    .user-btn {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .user-av {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+      border: 2px solid rgba(255, 255, 255, .3);
+    }
+
+    .user-name {
+      display: none;
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 10px);
+      right: 0;
+      background: #fff;
+      border-radius: 14px;
+      min-width: 190px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, .18);
+      border: 1px solid var(--border);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+      transition: all .22s;
+      z-index: 999;
+      overflow: hidden;
+    }
+
+    .user-dropdown.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+
+    .ud-head {
+      padding: 12px 14px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .ud-head strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .ud-head span {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .ud-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      transition: background .15s;
+    }
+
+    .ud-item:hover {
+      background: var(--sage);
+    }
+
+    .ud-item.danger {
+      color: var(--red);
+    }
+
+    .ud-item.danger:hover {
+      background: #fdecea;
+    }
+
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 24px 20px 80px;
+    }
+
+    .section {
+      display: none;
+    }
+
+    .section.active {
+      display: block;
+      animation: fadeUp .3s ease both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .greet-card {
+      background: linear-gradient(130deg, #1a4a2e, #1f5535 40%, #2d6a4f);
+      border-radius: 20px;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: 0 6px 28px rgba(26, 74, 46, .35);
+      margin-bottom: 24px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .greet-card::before {
+      content: '';
+      position: absolute;
+      right: -50px;
+      top: -50px;
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, .03);
+      pointer-events: none;
+    }
+
+    .greet-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 5px;
+    }
+
+    .greet-text h2 em {
+      color: var(--gold);
+      font-style: normal;
+    }
+
+    .greet-text p {
+      font-size: 13px;
+      color: #9ecfb8;
+    }
+
+    .greet-stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .gs {
+      text-align: center;
+      background: rgba(255, 255, 255, .1);
+      border-radius: 10px;
+      padding: 10px 18px;
+      border: 1px solid rgba(255, 255, 255, .12);
+    }
+
+    .gs-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--gold);
+    }
+
+    .gs-lbl {
+      font-size: 10px;
+      color: #9ecfb8;
+      margin-top: 2px;
+      font-weight: 600;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+
+    .kpi-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      border-top: 3px solid transparent;
+    }
+
+    .kpi-card.green {
+      border-top-color: var(--mint);
+    }
+
+    .kpi-card.gold {
+      border-top-color: var(--gold);
+    }
+
+    .kpi-card.blue {
+      border-top-color: #3b82f6;
+    }
+
+    .kpi-card.red {
+      border-top-color: var(--red);
+    }
+
+    .kpi-icon {
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .kpi-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--forest);
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .card-vn {
+      background: #fff;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, .05);
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .card-hd {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-hd h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--forest);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .card-bd {
+      padding: 18px;
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead tr {
+      background: var(--sage);
+    }
+
+    th {
+      padding: 9px 13px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--forest);
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    td {
+      padding: 10px 13px;
+      border-bottom: 1px solid #f0ede6;
+      color: var(--dark);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background: #fafdf8;
+    }
+
+    .bs {
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bs-active {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .bs-pending {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .bs-accepted {
+      background: #dcfce7;
+      color: #15803d;
+    }
+
+    .bs-rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .bs-fulfilled {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .form-vn .fg {
+      margin-bottom: 13px;
+    }
+
+    .form-vn label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+
+    .form-vn input,
+    .form-vn select,
+    .form-vn textarea {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid #ddd8ce;
+      border-radius: 10px;
+      font: 14px 'DM Sans', sans-serif;
+      color: var(--dark);
+      background: var(--cream);
+      outline: none;
+      transition: border-color .2s;
+      appearance: none;
+    }
+
+    .form-vn input:focus,
+    .form-vn select:focus,
+    .form-vn textarea:focus {
+      border-color: var(--leaf);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(45, 106, 79, .1);
+    }
+
+    .sel-wrap {
+      position: relative;
+    }
+
+    .sel-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted);
+    }
+
+    .form-vn select {
+      appearance: none;
+    }
+
+    .btn-vn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      font: 700 13px 'DM Sans', sans-serif;
+      cursor: pointer;
+      transition: all .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--forest);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--leaf);
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+    }
+
+    .btn-gold:hover {
+      background: var(--gold-l);
+    }
+
+    .btn-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--dark);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--leaf);
+      color: var(--leaf);
+    }
+
+    .btn-success-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-success-sm:hover {
+      background: #15803d;
+      color: #fff;
+    }
+
+    .btn-danger-sm {
+      padding: 5px 12px;
+      font-size: 12px;
+      background: #fee2e2;
+      color: var(--red);
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-danger-sm:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--red);
+      border: 1px solid #fecaca;
+    }
+
+    .btn-danger:hover {
+      background: var(--red);
+      color: #fff;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .contact-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 13px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      transition: all .2s;
+    }
+
+    .contact-card:hover {
+      border-color: var(--mint);
+      box-shadow: 0 4px 14px rgba(45, 106, 79, .1);
+    }
+
+    .cc-av {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--forest);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .cc-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .cc-loc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .cc-phone {
+      margin-left: auto;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--leaf);
+      background: var(--sage);
+      padding: 4px 9px;
+      border-radius: 14px;
+      white-space: nowrap;
+    }
+
+    .notif-item {
+      display: flex;
+      gap: 11px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+
+    .notif-item:last-child {
+      border-bottom: none;
+    }
+
+    .notif-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+    }
+
+    .notif-unread {
+      background: var(--sage);
+    }
+
+    .notif-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+
+    .notif-body {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+      line-height: 1.5;
+    }
+
+    .notif-time {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    @keyframes floatBot {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-7px);
+      }
+    }
+
+    #chat-btn {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--forest), var(--leaf));
+      color: #fff;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(26, 74, 46, .4), 0 0 0 3px rgba(232, 160, 32, .3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: floatBot 2.8s ease-in-out infinite;
+    }
+
+    #chat-btn:hover {
+      animation: none;
+      transform: scale(1.1);
+    }
+
+    .chat-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: var(--gold);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 900;
+      padding: 2px 6px;
+      border-radius: 10px;
+    }
+
+    #chat-win {
+      position: fixed;
+      bottom: 102px;
+      right: 28px;
+      z-index: 998;
+      width: 340px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, .2);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(45, 106, 79, .12);
+    }
+
+    #chat-win.open {
+      display: flex;
+      animation: sUp .25s ease;
+    }
+
+    @keyframes sUp {
+      from {
+        opacity: 0;
+        transform: translateY(14px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .ch-hd {
+      background: var(--forest);
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .ch-av {
+      width: 34px;
+      height: 34px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-l));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .ch-title {
+      margin-left: 9px;
+    }
+
+    .ch-title h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .ch-title p {
+      font-size: 11px;
+      color: #9ecfb8;
+    }
+
+    .ch-close {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 17px;
+      cursor: pointer;
+      opacity: .7;
+    }
+
+    .ch-msgs {
+      flex: 1;
+      overflow-y: auto;
+      padding: 11px 13px;
+      max-height: 250px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .msg {
+      max-width: 84%;
+      padding: 8px 11px;
+      border-radius: 11px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .msg.bot {
+      background: var(--sage);
+      color: var(--dark);
+      align-self: flex-start;
+      border-bottom-left-radius: 3px;
+    }
+
+    .msg.usr {
+      background: var(--forest);
+      color: #fff;
+      align-self: flex-end;
+      border-bottom-right-radius: 3px;
+    }
+
+    .msg.typ {
+      background: var(--sage);
+      color: var(--muted);
+      font-style: italic;
+      align-self: flex-start;
+    }
+
+    .ch-chips {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+      padding: 6px 11px 7px;
+      border-top: 1px solid #f0ede6;
+    }
+
+    .cchip {
+      padding: 4px 9px;
+      background: var(--sage);
+      border: 1px solid rgba(45, 106, 79, .15);
+      border-radius: 18px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--leaf);
+      cursor: pointer;
+      transition: all .18s;
+    }
+
+    .cchip:hover {
+      background: var(--leaf);
+      color: #fff;
+    }
+
+    .ch-foot {
+      display: flex;
+      padding: 9px 11px;
+      gap: 6px;
+      border-top: 1px solid #f0ede6;
+    }
+
+    .ch-inp {
+      flex: 1;
+      padding: 8px 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      font: 13px 'DM Sans', sans-serif;
+      outline: none;
+    }
+
+    .ch-inp:focus {
+      border-color: var(--leaf);
+    }
+
+    .ch-send {
+      padding: 8px 13px;
+      background: var(--forest);
+      color: #fff;
+      border: none;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .toast-wrap {
+      position: fixed;
+      top: 76px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .toast-vn {
+      background: #fff;
+      border-radius: 11px;
+      padding: 11px 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, .14);
+      border-left: 4px solid var(--mint);
+      font-size: 13px;
+      font-weight: 500;
+      animation: slideIn .3s ease;
+      min-width: 240px;
+    }
+
+    .toast-vn.error {
+      border-left-color: var(--red);
+    }
+
+    .toast-vn.gold {
+      border-left-color: var(--gold);
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(36px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @media(max-width:992px) {
+      .nav-center {
+        display: none !important;
+      }
+
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media(max-width:576px) {
+      .kpi-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .page {
+        padding: 14px 10px 80px;
+      }
+
+      #chat-win {
+        width: calc(100vw - 32px);
+        right: 16px;
+      }
+
+      .greet-card {
+        flex-direction: column;
+      }
+    }
+
+    /* ── SIDEBAR ── */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 220px;
+      background: linear-gradient(180deg, #1a4a2e, #1e5534 60%, #2a6644);
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 66px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: transform .3s;
+      overflow-y: auto;
+    }
+
+    .main-content {
+      margin-left: 0;
+      flex: 1;
+    }
+
+    @media(max-width:992px) {
+      .sidebar {
+        transform: translateX(-100%);
+        top: 0;
+        z-index: 1100;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .main-content {
+        margin-left: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar-vn">
+    <div style="display:flex;align-items:center;gap:12px;"><button
+        style="display:none;background:none;border:none;color:#fff;font-size:22px;cursor:pointer;" class="sb-toggle"
+        id="sb-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')"><i
+          class="bi bi-list"></i></button>
+      <div class="nav-brand">
+        <h1>Vila<em>Neram</em></h1>
+        <p>Right Time, Right Price, Every Time!</p>
+      </div>
+    </div>
+    <div class="nav-center">
+      <button class="nav-btn active" onclick="showSection('dashboard',this)"><i class="bi bi-speedometer2"></i>
+        Dashboard</button>
+      <button class="nav-btn" onclick="showSection('demand',this)"><i class="bi bi-plus-circle"></i> Post
+        Requirement</button>
+      <button class="nav-btn" onclick="showSection('supply',this)"><i class="bi bi-boxes"></i> Nearby Supply</button>
+      <button class="nav-btn" onclick="showSection('offers',this)"><i class="bi bi-send"></i> My Offers <span
+          class="nb-badge" id="offer-badge" style="display:none">0</span></button>
+      <button class="nav-btn" onclick="showSection('farmers',this)"><i class="bi bi-people"></i> Farmers</button>
+      <button class="nav-btn" onclick="showSection('notifications',this)"><i class="bi bi-bell"></i> Alerts <span
+          class="nb-badge" id="notif-badge" style="display:none">0</span></button>
+    </div>
+    <div class="nav-right">
+      <div class="user-menu">
+        <div class="user-btn" onclick="toggleUserMenu(event)">
+          <div class="user-av" id="user-av">S</div>
+        </div>
+        <div class="user-dropdown" id="user-dropdown">
+          <div class="ud-head"><strong id="ud-name">—</strong><span id="ud-loc">—</span></div>
+          <button class="ud-item danger" onclick="doLogout()"><i class="bi bi-box-arrow-left"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  </div>
+
+  <div class="page">
+
+    <!-- DASHBOARD -->
+    <div class="section active" id="sec-dashboard">
+      <div class="greet-card">
+        <div class="greet-text">
+          <h2 id="greet-h">Namaskaram, <em>Shopkeeper</em>! 🏪</h2>
+          <p id="greet-p">Loading your marketplace overview…</p>
+        </div>
+        <div class="greet-stats">
+          <div class="gs">
+            <div class="gs-num" id="gs-supply">—</div>
+            <div class="gs-lbl">Nearby Supply</div>
+          </div>
+          <div class="gs">
+            <div class="gs-num" id="gs-req">—</div>
+            <div class="gs-lbl">My Sent Offers</div>
+          </div>
+        </div>
+      </div>
+      <div class="kpi-row">
+        <div class="kpi-card green">
+          <div class="kpi-icon">📋</div>
+          <div class="kpi-val" id="kpi-demands">—</div>
+          <div class="kpi-label">My Requirements</div>
+        </div>
+        <div class="kpi-card gold">
+          <div class="kpi-icon">🧑‍🌾</div>
+          <div class="kpi-val" id="kpi-supply">—</div>
+          <div class="kpi-label">Nearby Supply</div>
+        </div>
+        <div class="kpi-card blue">
+          <div class="kpi-icon">📤</div>
+          <div class="kpi-val" id="kpi-requests">—</div>
+          <div class="kpi-label">My Sent Offers</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-icon">🔔</div>
+          <div class="kpi-val" id="kpi-notifs">—</div>
+          <div class="kpi-label">Unread Alerts</div>
+        </div>
+      </div>
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-send text-warning"></i> My Sent Offers</h3><button
+                class="btn-vn btn-sm btn-outline" onclick="showSection('offers',null)">View All</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Farmer</th>
+                    <th>Phone</th>
+                    <th>Commodity</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="offers-mini-tb">
+                  <tr>
+                    <td colspan="5" class="text-center text-muted py-3">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-boxes text-success"></i> Nearby Farmer Supply</h3><button
+                class="btn-vn btn-sm btn-outline" onclick="showSection('supply',null)">View All</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Farmer</th>
+                    <th>Phone</th>
+                    <th>Commodity</th>
+                    <th>Qty</th>
+                  </tr>
+                </thead>
+                <tbody id="supply-mini-tb">
+                  <tr>
+                    <td colspan="4" class="text-center text-muted py-3">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST DEMAND -->
+    <div class="section" id="sec-demand">
+      <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">📋 Post Requirement</h4>
+      <p class="text-muted mb-3" style="font-size:13px;">Let nearby farmers know what you need — active for 3 days</p>
+      <div class="row g-4">
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-plus-circle text-warning"></i> New Requirement</h3>
+            </div>
+            <div class="card-bd">
+              <div id="demand-msg"></div>
+              <div class="form-vn">
+                <div class="fg"><label>Commodity <span style="color:var(--red)">*</span></label>
+                  <div class="sel-wrap"><select id="d-commodity"
+                      onchange="checkCustomComm('d-commodity','d-custom-comm-wrap')">
+                      <option value="">Loading…</option>
+                    </select></div>
+                  <div id="d-custom-comm-wrap" style="display:none;margin-top:6px;"><input type="text"
+                      id="d-custom-comm" placeholder="Type your commodity name"
+                      style="width:100%;padding:9px 13px;border:1.5px solid var(--gold);border-radius:10px;font:13px 'DM Sans',sans-serif;background:#fff;outline:none;" />
+                  </div>
+                </div>
+                <div class="row g-2">
+                  <div class="col-7">
+                    <div class="fg"><label>Quantity Needed <span style="color:var(--red)">*</span></label><input
+                        type="number" id="d-qty" placeholder="e.g. 30" min="0.1" step="0.1" /></div>
+                  </div>
+                  <div class="col-5">
+                    <div class="fg"><label>Unit</label>
+                      <div class="sel-wrap"><select id="d-unit">
+                          <option value="kg">kg</option>
+                          <option value="bunch">bunch</option>
+                          <option value="nos">nos</option>
+                          <option value="litre">litre</option>
+                        </select></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="fg"><label>Maximum Price/Unit (optional)</label><input type="number" id="d-price"
+                    placeholder="₹ max price" /></div>
+                <div class="fg"><label>Description (optional)</label><textarea id="d-desc" rows="2"
+                    placeholder="Urgency, quality needed…"></textarea></div>
+                <div class="fg"><label>Your Location</label><input type="text" id="d-loc" readonly
+                    style="background:var(--sage);color:var(--leaf);font-weight:600;cursor:not-allowed;" /></div>
+                <button class="btn-vn btn-gold w-100" onclick="submitDemand()"><i class="bi bi-send"></i> Post
+                  Requirement</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="card-vn">
+            <div class="card-hd">
+              <h3><i class="bi bi-list-ul text-warning"></i> My Requirements</h3>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Commodity</th>
+                    <th>Qty</th>
+                    <th>Max Price</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="my-demand-tb">
+                  <tr>
+                    <td colspan="6" class="text-center text-muted py-3">Loading…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEARBY SUPPLY -->
+    <div class="section" id="sec-supply">
+      <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">📦 Nearby Farmer Supply</h4>
+      <p class="text-muted mb-3" style="font-size:13px;">Farmers in <strong id="my-lb">your panchayath</strong> with
+        available produce — click <strong>Send Offer</strong> to request their produce directly</p>
+      <div class="card-vn">
+        <div class="card-hd">
+          <h3><i class="bi bi-boxes text-success"></i> Available Supply</h3><span class="text-muted"
+            style="font-size:12px;" id="supply-count"></span>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Farmer</th>
+                <th>Phone</th>
+                <th>Commodity</th>
+                <th>Quantity</th>
+                <th>Expected Price</th>
+                <th>Description</th>
+                <th>Expires</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="supply-tb">
+              <tr>
+                <td colspan="8" class="text-center text-muted py-4">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FARMERS NEARBY -->
+    <div class="section" id="sec-farmers">
+      <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">🧑‍🌾 Farmers in My Panchayath
+      </h4>
+      <p class="text-muted mb-3" style="font-size:13px;">Contact farmers directly in your area</p>
+      <div class="contact-grid" id="farmers-grid">
+        <div class="text-muted py-3">Loading…</div>
+      </div>
+    </div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="section" id="sec-notifications">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+          <h4 style="font-family:'Playfair Display',serif;color:var(--forest);">🔔 Notifications</h4>
+          <p class="text-muted" style="font-size:13px;">Updates on requests and marketplace</p>
+        </div>
+        <button class="btn-vn btn-sm btn-outline" onclick="markAllRead()">Mark all read</button>
+      </div>
+      <div class="card-vn">
+        <div class="card-bd" id="notif-list">
+          <div class="text-center text-muted py-4">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY SENT OFFERS -->
+    <div class="section" id="sec-offers">
+      <h4 class="mb-1" style="font-family:'Playfair Display',serif;color:var(--forest);">📤 My Sent Offers</h4>
+      <p class="text-muted mb-3" style="font-size:13px;">Purchase offers you sent directly to farmers — track their
+        responses</p>
+      <div class="card-vn">
+        <div class="card-hd">
+          <h3><i class="bi bi-send text-warning"></i> Offers Sent</h3>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Farmer</th>
+                <th>Phone</th>
+                <th>Commodity</th>
+                <th>Quantity</th>
+                <th>Your Offer Message</th>
+                <th>Status</th>
+                <th>Farmer's Note</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="offers-sent-tb">
+              <tr>
+                <td colspan="8" class="text-center text-muted py-4">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- OFFER MODAL — shopkeeper sends offer to farmer -->
+  <div class="modal fade" id="offerModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-radius:16px;border:none;">
+        <div class="modal-header"
+          style="background:linear-gradient(135deg,var(--forest),var(--leaf));border-radius:16px 16px 0 0;">
+          <h5 class="modal-title text-white" style="font-family:'Playfair Display',serif;">📤 Send Purchase Offer</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4">
+          <div id="offer-err"></div>
+          <div id="offer-supply-info"
+            style="background:var(--sage);border-radius:10px;padding:12px 14px;font-size:13px;margin-bottom:14px;">
+          </div>
+          <div class="form-vn">
+            <div class="fg">
+              <label>Your Offer Price / unit (optional)</label>
+              <input type="number" id="offer-price" placeholder="e.g. ₹45 per kg — leave blank to negotiate" min="0"
+                step="0.5" />
+              <div style="font-size:11px;color:var(--muted);margin-top:3px;">Leave blank if you want to negotiate the
+                price with the farmer</div>
+            </div>
+            <div class="fg">
+              <label>Message to Farmer (optional)</label>
+              <textarea id="offer-msg" rows="3" placeholder="e.g. Try to deliver at..."></textarea>
+            </div>
+          </div>
+          <input type="hidden" id="offer-supply-id" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn-vn btn-outline btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-vn btn-gold btn-sm" onclick="submitOffer()"><i class="bi bi-send"></i> Send Offer to
+            Farmer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHATBOT -->
+  <button id="chat-btn" onclick="toggleChat()">🏪<span class="chat-badge">AI</span></button>
+  <div id="chat-win">
+    <div class="ch-hd">
+      <div class="d-flex align-items-center">
+        <div class="ch-av">🤖</div>
+        <div class="ch-title">
+          <h4>VilaNeram AI</h4>
+          <p>Agricultural assistant</p>
+        </div>
+      </div>
+      <button class="ch-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="ch-msgs" id="ch-msgs">
+      <div class="msg bot">🙏 Namaskaram! Ask me about finding farmers, commodity prices, or marketplace tips!</div>
+    </div>
+    <div class="ch-chips">
+      <div class="cchip" onclick="sc('How to find farmers?')">🧑‍🌾 Find farmers</div>
+      <div class="cchip" onclick="sc('Which commodities are available nearby?')">📦 Available</div>
+      <div class="cchip" onclick="sc('How to accept a request?')">✅ Requests</div>
+    </div>
+    <div class="ch-foot">
+      <input class="ch-inp" id="ch-inp" type="text" placeholder="Ask about marketplace…"
+        onkeydown="if(event.key==='Enter')sm()" />
+      <button class="ch-send" onclick="sm()">➤</button>
+    </div>
+  </div>
+  <div class="toast-wrap" id="toast-wrap"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    var USER = null, TOKEN = null, ALL_COMM = [], chatOpen = false, chatH = [];
+
+    window.onload = async function () {
+      TOKEN = localStorage.getItem('token');
+      if (!TOKEN) { window.location.href = '/'; return; }
+      if (localStorage.getItem('role') === 'farmer') { window.location.href = '/farmer'; return; }
+      if (localStorage.getItem('role') === 'admin') { window.location.href = '/admin'; return; }
+      await loadUser();
+      await Promise.all([loadCommodities(), loadDashboardData()]);
+      loadNotifCount();
+    };
+
+    async function loadUser() {
+      try {
+        var r = await api('/api/auth/me'); USER = r;
+        var ini = (r.name || 'S').split(' ').map(w => w[0] || '').join('').substring(0, 2).toUpperCase() || 'S';
+        document.getElementById('user-av').textContent = ini;
+        if (document.getElementById('user-name')) document.getElementById('user-name').textContent = r.name || 'Shopkeeper';
+        document.getElementById('ud-name').textContent = r.name || 'Shopkeeper';
+        document.getElementById('ud-loc').textContent = '📍 ' + (r.local_body || r.district || 'Kerala');
+        var fn = (r.name || 'Shopkeeper').split(' ')[0];
+        document.getElementById('greet-h').innerHTML = 'Namaskaram, <em>' + esc(fn) + '</em>! 🏪';
+        document.getElementById('d-loc').value = (r.local_body || '') + (r.district ? ', ' + r.district : '');
+        document.getElementById('my-lb').textContent = r.local_body || 'your panchayath';
+      } catch (e) { doLogout(); }
+    }
+
+    async function loadCommodities() {
+      try {
+        var r = await api('/api/commodities'); ALL_COMM = r.commodities || [];
+        var sel = document.getElementById('d-commodity');
+        sel.innerHTML = '<option value="">— Select commodity —</option>';
+        var oc = document.createElement('option'); oc.value = '__custom__'; oc.textContent = '+ Enter custom commodity…'; sel.appendChild(oc);
+        ALL_COMM.forEach(function (cm) { var o = document.createElement('option'); o.value = cm; o.textContent = cm; sel.appendChild(o); });
+      } catch (e) { }
+    }
+
+    async function loadDashboardData() {
+      try {
+        var [demands, supply, offers, notifs] = await Promise.all([api('/api/demand/mine'), api('/api/supply/nearby'), api('/api/offers/sent'), api('/api/notifications/unread-count')]);
+        var pending = offers.filter(r => r.status === 'pending').length;
+        document.getElementById('kpi-demands').textContent = demands.filter(d => d.status === 'active').length;
+        document.getElementById('kpi-supply').textContent = supply.length;
+        document.getElementById('kpi-requests').textContent = offers.length;
+        document.getElementById('kpi-notifs').textContent = notifs.count || 0;
+        document.getElementById('gs-supply').textContent = supply.length;
+        document.getElementById('gs-req').textContent = offers.length;
+        document.getElementById('greet-p').textContent = supply.length + ' farmer supply listing' + (supply.length !== 1 ? 's' : '') + ' nearby. ' + offers.length + ' offer' + (offers.length !== 1 ? 's' : '') + ' sent.';
+        if (pending > 0) { document.getElementById('offer-badge').textContent = pending; document.getElementById('offer-badge').style.display = 'inline'; }
+        renderOffersMini(offers.slice(0, 4));
+        renderSupplyMini(supply.slice(0, 4));
+      } catch (e) { }
+    }
+
+    function renderOffersMini(rows) {
+      var tb = document.getElementById('offers-mini-tb');
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No offers sent yet.</td></tr>'; return; }
+      tb.innerHTML = rows.map(r => `<tr>
+    <td><strong>${esc(r.farmer_name)}</strong></td>
+    <td style="font-family:'DM Mono',monospace;font-size:11px;">${esc(r.farmer_mobile || '—')}</td>
+    <td>${esc(r.supply.commodity_name || '—')}</td>
+    <td>${r.supply.quantity || '—'} ${r.supply.unit || ''}</td>
+    <td><span class="bs bs-${r.status}">${r.status}</span></td>
+  </tr>`).join('');
+    }
+
+    function renderSupplyMini(rows) {
+      var tb = document.getElementById('supply-mini-tb');
+      if (!rows.length) { tb.innerHTML = '<tr><td colspan="4" class="text-center text-muted py-3">No supply nearby.</td></tr>'; return; }
+      tb.innerHTML = rows.map(r => `<tr>
+    <td><strong>${esc(r.farmer_name)}</strong></td>
+    <td style="font-family:'DM Mono',monospace;font-size:11px;">${esc(r.farmer_mobile || '—')}</td>
+    <td>${esc(r.commodity_name)}</td>
+    <td>${r.quantity} ${r.unit}</td>
+  </tr>`).join('');
+    }
+
+    function checkCustomComm(selId, wrapId) { var sel = document.getElementById(selId); var wrap = document.getElementById(wrapId); if (wrap) wrap.style.display = sel.value === '__custom__' ? 'block' : 'none'; }
+    function getCommValue(selId, customId) { var sel = document.getElementById(selId); if (sel.value === '__custom__') { var v = document.getElementById(customId).value.trim(); return v || null; } return sel.value || null; }
+
+    async function submitDemand() {
+      var comm = getCommValue('d-commodity', 'd-custom-comm'); var qty = document.getElementById('d-qty').value; var unit = document.getElementById('d-unit').value; var price = document.getElementById('d-price').value; var desc = document.getElementById('d-desc').value;
+      if (!comm) return toast('Select or enter a commodity', 'error'); if (!qty || qty <= 0) return toast('Enter valid quantity', 'error');
+      try {
+        await api('/api/demand', 'POST', { commodity_name: comm, quantity_needed: parseFloat(qty), unit, max_price: price ? parseFloat(price) : null, description: desc || null });
+        toast('Requirement posted! Nearby farmers notified.');
+        document.getElementById('d-commodity').value = ''; document.getElementById('d-qty').value = ''; document.getElementById('d-price').value = ''; document.getElementById('d-desc').value = '';
+        loadMyDemands(); loadDashboardData();
+      } catch (e) { toast(e.message || 'Could not post', 'error'); }
+    }
+
+    async function loadMyDemands() {
+      try {
+        var rows = await api('/api/demand/mine'); var tb = document.getElementById('my-demand-tb');
+        if (!rows.length) { tb.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-3">No requirements posted yet.</td></tr>'; return; }
+        tb.innerHTML = rows.map(r => `<tr>
+      <td><strong>${esc(r.commodity_name)}</strong></td><td>${r.quantity_needed} ${r.unit}</td>
+      <td>${r.max_price ? '₹' + r.max_price : '—'}</td>
+      <td style="font-size:11px;">${r.expires_at.substring(0, 10)}</td>
+      <td><span class="bs bs-${r.status === 'active' ? 'active' : r.status === 'fulfilled' ? 'fulfilled' : 'pending'}">${r.status}</span></td>
+      <td>${r.status === 'active' ? `<button class="btn-vn btn-sm btn-danger" onclick="deleteDemand(${r.id})"><i class="bi bi-trash"></i></button>` : '—'}</td>
+    </tr>`).join('');
+      } catch (e) { }
+    }
+
+    async function deleteDemand(id) { if (!confirm('Cancel this requirement?')) return; try { await api('/api/demand/' + id, 'DELETE'); toast('Requirement cancelled'); loadMyDemands(); loadDashboardData(); } catch (e) { toast('Could not cancel', 'error'); } }
+
+    async function loadNearbySupply() {
+      try {
+        var rows = await api('/api/supply/nearby'); document.getElementById('supply-count').textContent = rows.length + ' listing(s)'; var tb = document.getElementById('supply-tb');
+        if (!rows.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No supply in your panchayath right now.</td></tr>'; return; }
+        tb.innerHTML = rows.map(r => `<tr>
+      <td><strong>${esc(r.farmer_name)}</strong></td>
+      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--leaf);">📞 ${esc(r.farmer_mobile || '—')}</td>
+      <td>${esc(r.commodity_name)}</td><td>${r.quantity} ${r.unit}</td>
+      <td>${r.expected_price ? '₹' + r.expected_price + '/' + r.unit : 'Negotiable'}</td>
+      <td>${r.description || '—'}</td>
+      <td style="font-size:11px;">${r.expires_at}</td>
+      <td><button class="btn-vn btn-sm btn-gold" onclick="openOfferModal(${r.id},'${esc(r.farmer_name)}','${esc(r.commodity_name)}',${r.quantity},'${r.unit}',${r.expected_price || 'null'})"><i class="bi bi-send"></i> Send Offer</button></td>
+    </tr>`).join('');
+        renderSupplyMini(rows.slice(0, 4));
+      } catch (e) { }
+    }
+
+    function openOfferModal(supplyId, farmerName, commodity, qty, unit, expectedPrice) {
+      document.getElementById('offer-supply-id').value = supplyId;
+      document.getElementById('offer-supply-info').innerHTML =
+        '<strong>' + esc(farmerName) + '</strong> is offering <strong>' + qty + ' ' + unit + ' of ' + esc(commodity) + '</strong>' +
+        (expectedPrice ? ' at ₹' + expectedPrice + '/' + unit + ' (expected).' : ' — price negotiable.');
+      document.getElementById('offer-price').value = expectedPrice || '';
+      document.getElementById('offer-msg').value = '';
+      document.getElementById('offer-err').innerHTML = '';
+      new bootstrap.Modal(document.getElementById('offerModal')).show();
+    }
+
+    async function submitOffer() {
+      var supplyId = parseInt(document.getElementById('offer-supply-id').value);
+      var price = document.getElementById('offer-price').value;
+      var msg = document.getElementById('offer-msg').value.trim();
+      document.getElementById('offer-err').innerHTML = '';
+      try {
+        await api('/api/offers', 'POST', {
+          supply_id: supplyId,
+          message: msg || null,
+          offer_price: price ? parseFloat(price) : null
+        });
+        bootstrap.Modal.getInstance(document.getElementById('offerModal')).hide();
+        toast('✅ Offer sent! Farmer will be notified.');
+        loadSentOffers();
+      } catch (e) {
+        document.getElementById('offer-err').innerHTML = '<div style="color:var(--red);font-size:12px;margin-bottom:8px;">' + esc(e.message) + '</div>';
+      }
+    }
+
+    async function loadSentOffers() {
+      try {
+        var rows = await api('/api/offers/sent');
+        var tb = document.getElementById('offers-sent-tb');
+        if (!rows.length) { tb.innerHTML = '<tr><td colspan="8" class="text-center text-muted py-4">No offers sent yet. Browse Nearby Supply and click Send Offer.</td></tr>'; return; }
+        var pending = rows.filter(r => r.status === 'pending').length;
+        if (pending > 0) { document.getElementById('offer-badge').textContent = pending; document.getElementById('offer-badge').style.display = 'inline'; }
+        tb.innerHTML = rows.map(r => `<tr>
+          <td><strong>${esc(r.farmer_name)}</strong></td>
+          <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--leaf);">📞 ${esc(r.farmer_mobile || '—')}</td>
+          <td>${esc(r.supply.commodity_name || '—')}</td>
+          <td>${r.supply.quantity || '—'} ${r.supply.unit || ''}</td>
+          <td style="font-size:12px;">${r.message || '—'}</td>
+          <td><span class="bs bs-${r.status}">${r.status}</span></td>
+          <td style="font-size:12px;color:var(--muted);">${r.farmer_note || '—'}</td>
+          <td style="font-size:11px;">${r.created_at}</td>
+        </tr>`).join('');
+      } catch (e) { }
+    }
+
+
+    async function loadFarmers() {
+      try {
+        var rows = await api('/api/community/farmers'); var g = document.getElementById('farmers-grid');
+        if (!rows.length) { g.innerHTML = '<div class="text-center text-muted py-5" style="grid-column:1/-1"><div style="font-size:44px">🧑‍🌾</div><p>No farmers registered in your panchayath yet.</p></div>'; return; }
+        g.innerHTML = rows.map(r => `<div class="contact-card"><div class="cc-av">${r.name[0].toUpperCase()}</div><div><div class="cc-name">${esc(r.name)}</div><div class="cc-loc">📍 ${esc(r.local_body || r.district || '—')}</div></div><div class="cc-phone">📞 ${esc(r.mobile)}</div></div>`).join('');
+      } catch (e) { }
+    }
+
+    async function loadNotifications() {
+      try {
+        var rows = await api('/api/notifications'); var list = document.getElementById('notif-list');
+        if (!rows.length) { list.innerHTML = '<div class="text-center text-muted py-4">No notifications yet.</div>'; return; }
+        list.innerHTML = rows.map(r => `<div class="notif-item ${r.is_read ? '' : 'notif-unread'}" onclick="markRead(${r.id},this)">
+      <div class="notif-ico" style="background:${r.type === 'accepted' ? '#dcfce7' : r.type === 'rejected' ? '#fee2e2' : r.type === 'request' ? '#fef9c3' : '#e0f2fe'}">${r.type === 'accepted' ? '✅' : r.type === 'rejected' ? '❌' : r.type === 'request' ? '📥' : '🔔'}</div>
+      <div style="flex:1"><div class="notif-title">${esc(r.title)}</div><div class="notif-body">${esc(r.body)}</div><div class="notif-time">${r.created_at}</div></div>
+      ${!r.is_read ? '<span style="width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:4px;display:block;"></span>' : ''}
+    </div>`).join('');
+      } catch (e) { }
+    }
+
+    async function markRead(id, el) { try { await api('/api/notifications/' + id + '/read', 'PATCH'); el.classList.remove('notif-unread'); loadNotifCount(); } catch (e) { } }
+    async function markAllRead() { try { await api('/api/notifications/read-all', 'PATCH'); loadNotifications(); loadNotifCount(); } catch (e) { } }
+    async function loadNotifCount() { try { var r = await api('/api/notifications/unread-count'); var n = r.count || 0; document.getElementById('notif-badge').textContent = n; document.getElementById('notif-badge').style.display = n > 0 ? 'inline' : 'none'; document.getElementById('kpi-notifs').textContent = n; } catch (e) { } }
+
+    function showSection(id, btn) {
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+      if (id === 'supply') loadNearbySupply();
+      if (id === 'offers') loadSentOffers();
+      if (id === 'farmers') loadFarmers();
+      if (id === 'notifications') loadNotifications();
+      if (id === 'demand') loadMyDemands();
+      window.scrollTo(0, 0);
+    }
+
+    function toggleUserMenu(e) { e.stopPropagation(); document.getElementById('user-dropdown').classList.toggle('open'); }
+    document.addEventListener('click', function () { document.getElementById('user-dropdown').classList.remove('open'); });
+
+    function toggleChat() { chatOpen = !chatOpen; document.getElementById('chat-win').classList.toggle('open', chatOpen); if (chatOpen) setTimeout(() => document.getElementById('ch-inp').focus(), 100); }
+    function addMsg(t, r) { var c = document.getElementById('ch-msgs'), d = document.createElement('div'); d.className = 'msg ' + r; d.textContent = t; c.appendChild(d); c.scrollTop = c.scrollHeight; return d; }
+    function sc(t) { document.getElementById('ch-inp').value = t; sm(); }
+    async function sm() { var inp = document.getElementById('ch-inp'), t = inp.value.trim(); if (!t) return; inp.value = ''; addMsg(t, 'usr'); chatH.push({ role: 'user', content: t }); var typ = addMsg('Thinking…', 'typ'); try { var r = await api('/api/chat', 'POST', { message: t, history: chatH.slice(-6) }); typ.remove(); addMsg(r.reply || 'Sorry!', 'bot'); chatH.push({ role: 'assistant', content: r.reply }); } catch (ex) { typ.remove(); addMsg('VilaNeram AI is not available right now.', 'bot'); } }
+    function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    async function api(url, method, body) { var opts = { method: method || 'GET', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + TOKEN } }; if (body) opts.body = JSON.stringify(body); var r = await fetch(url, opts); var d = await r.json(); if (!r.ok) throw new Error(d.detail || 'Request failed'); return d; }
+    function toast(msg, type) { var w = document.getElementById('toast-wrap'); var d = document.createElement('div'); d.className = 'toast-vn ' + (type || ''); d.textContent = msg; w.appendChild(d); setTimeout(() => d.remove(), 3500); }
+    function doLogout() { ['token', 'role', 'name'].forEach(k => localStorage.removeItem(k)); window.location.replace('/index.html'); }
+  </script>
+
+</body>
+
+</html>
