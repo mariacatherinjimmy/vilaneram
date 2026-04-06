@@ -1,9 +1,33 @@
-vila/
-*.zip
-*.pkl
-*.joblib
-venv/
-v/
+# Python
 __pycache__/
-*.db
-*.env
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual env
+venv/
+.vila/
+.v/
+.env/
+.venv/
+
+# Environment variables
+.env
+
+# VS Code
+.vscode/
+
+# Mac / Windows
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Render
+.render
+
+# Python build
+build/
+dist/
+*.egg-info/
